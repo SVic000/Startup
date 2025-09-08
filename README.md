@@ -33,4 +33,4 @@ Store user wins and perhaps which cards (in the current session) have not been i
 Both players will be constantly interacting with each other, maybe if I have time, I'll implement a bot that can play so that you don't NEED another player, but that win will not be recorded in the DB
 
 
-I haven't commited to any of these ideas, It'll probably change as I go on and figure out my limits and from there this project will evolve into something doable. So I don't die this semester.
+I haven't commited to any of these ideas, It'll probably change as I go on and figure out my limits and from there this project will evolve into something doable. So I don't die this semester. I'm still new to webprogramming so I don't exactly know my tools or powers, I'm excited to finally learn.
