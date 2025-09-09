@@ -2,7 +2,7 @@
 CS260 Semester Project
 ## Introduction
 For my semester project, I think I've decided that I'm going to do something crazy. Unfortunately, since I am pretty new to coding and don't quite understand the scope of the project, I don't quite know how every aspect that is expected of me will be fulfilled. I'm just going to get an idea out there and see if I can refine it into meeting everything I need. 
-## General Idea
+## General Idea/Elevator Pitch
 I think I'm going to try to implement a very simple version of Go Fish. The amount of work will probably vary since there might be things I'll need to dial back on. I have the general feel of everything that I hope to be able to capture. I plan to have 4 pages in total. The actual name of the website is under construction, but as of now it's call CATfish. A play on the game and the themeing.
 
 ![flow](https://github.com/user-attachments/assets/e0546241-d84d-4863-ad80-e88830f6f23a)
