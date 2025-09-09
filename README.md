@@ -3,21 +3,23 @@ CS260 Semester Project
 ## Introduction
 For my semester project, I think I've decided that I'm going to do something crazy. Unfortunately, since I am pretty new to coding and don't quite understand the scope of the project, I don't quite know how every aspect that is expected of me will be fulfilled. I'm just going to get an idea out there and see if I can refine it into meeting everything I need. 
 ## General Idea
-I think I'm going to try to implement a very simple version of Go Fish. The amount of work will probably vary since there might be things I'll need to dial back on.
+I think I'm going to try to implement a very simple version of Go Fish. The amount of work will probably vary since there might be things I'll need to dial back on. I have the general feel of everything that I hope to be able to capture. I plan to have 4 pages in total. The actual name of the website is under construction, but as of now it's call CATfish. A play on the game and the themeing.
 
-![General Layout](https://github.com/user-attachments/assets/e8209a70-798f-4288-9774-840ee9278096)
+![flow](https://github.com/user-attachments/assets/e0546241-d84d-4863-ad80-e88830f6f23a)
+
+![pages](https://github.com/user-attachments/assets/21255854-a8dc-45a4-9cbc-1e73e6ce4f02)
 
 
 ### HTML:
-I don't know how many pages I'll need, but for now, I'll make sure it's written correctly and feels aesthetically pleasing to the user.
+I plan to have 4 pages in total. One for the required log in. One as a menu, sonmething other pages can fall back on. One as the actual game experience. And the last to keep track of how many times the player has won against another. This will be seen as "catching fish".
 
 ### CSS
-I'll only be focusing on mobile (iPhone) and laptop formatting, and I'll make sure that it doesn't feel like there's a lot of space, nor that there's a weird feel to the formatting. It'll all be intentional. 
+I'll only be focusing on mobile (iPhone) and laptop formatting, and I'll make sure that it doesn't feel like there's a lot of white space, nor that there's a weird feel to the formatting. It'll all be intentional. I plan to make all my assets 2D so that I can just cycle through environments and feels by just displaying images.
 
 ### React
-Perhaps have the enemy opponent (as seen as a cat) make reactions due to our users' responses and questions. I've attached a fun idea, though I do not know if I'll have time for it. There will also be animations for the cards. I haven't decided what yet.
+I'm not sure what tools are available through react but I do know that the majority of my animations will fall on the depiction of the other player. I plan on cycling through faces depending on if certain conditions are met. I might even set a timer that resets if the head changes because of an action that makes the character blink. I don't know. I want this to feel whimsical and fun while not really villianizing the other player. It's all for fun, and it's all cat themed because why not. This is probably the step that I could lose myself to so I'll try limiting my brain so I don't fall behind trying to make everything perfect. 
 
-![enemy animationn ideas](https://github.com/user-attachments/assets/6dd88127-6eef-4a2d-a30a-b019617ec06d)
+![reactions](https://github.com/user-attachments/assets/c3a1d1f1-7d74-486b-a2b8-3c8385d05691)
 
 ### Service
 Backendpoints for:
@@ -33,4 +35,4 @@ Store user wins and perhaps which cards (in the current session) have not been i
 Both players will be constantly interacting with each other, maybe if I have time, I'll implement a bot that can play so that you don't NEED another player, but that win will not be recorded in the DB
 
 
-I haven't commited to any of these ideas, It'll probably change as I go on and figure out my limits and from there this project will evolve into something doable. So I don't die this semester. I'm still new to webprogramming so I don't exactly know my tools or powers, I'm excited to finally learn.
+I haven't commited to any of these ideas, It'll probably change as I go on and figure out my limits and from there this project will evolve into something doable. So I don't die this semester. I'm still new to webprogramming so I don't exactly know my tools or powers, I'm excited to learn.
