@@ -1,4 +1,4 @@
-# CATfish - goFISH
+# CATfish - GOfish
 
 I think I'm going to try to implement a very simple version of Go Fish. The amount of work will probably vary since there might be things I'll need to dial back on. I have the general feel of everything that I hope to be able to capture. I plan to have 4 pages in total. The actual name of the website is under construction, but as of now it's call CATfish. A play on the game and the themeing.
 
