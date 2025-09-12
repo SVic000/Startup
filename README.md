@@ -2,19 +2,6 @@
 
 I think I'm going to try to implement a very simple version of Go Fish. The amount of work will probably vary since there might be things I'll need to dial back on. I have the general feel of everything that I hope to be able to capture. I plan to have 4 pages in total. The actual name of the website is under construction, but as of now it's call CATfish. A play on the game and the themeing.
 
-## 🚀 Specification Deliverable
-
-> [!NOTE]
->  Fill in this sections as the submission artifact for this deliverable. You can refer to this [example](https://github.com/webprogramming260/startup-example/blob/main/README.md) for inspiration.
-
-For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
-
-- [X] Proper use of Markdown
-- [X] A concise and compelling elevator pitch
-- [X] Description of key features
-- [X] Description of how you will use each technology
-- [X] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references.
-
 ### Elevator pitch
 
 I plan on implimenting a very simple version of GOfish but entirely cat themed. The main focus will be the game aspect, but through aesthetics and look I'll be able to make a webiste that is also fun to be on. All assets will be done by me, and there will be a ton of assets. Like the cards, the oponent, the environment, and some art pieces to decorate the login, scores, and main home page.
