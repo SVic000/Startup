@@ -1,14 +1,14 @@
 <!DOCTYPE HTML>
 <!-- where the actual game will be, websocket will be -->
 <html>
-    <header>
+    <head>
         <meta charset="UTF-8" />
         <!-- Tell browsers not to scale the viewport automatically -->
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>CATfishGOFish Play</title>
         <link rel="icon" href="favicon.ico" />
 
-    </header>
+    </head>
     <body>
         <main>
       <header>
@@ -32,6 +32,24 @@
         <span> Got any threes?</span>
       </div>
       <br />
+      <div> 
+        <table>
+          <tr>
+            <td>
+              <p> your pairs</p>
+              <canvas id="myCanvas" width="100" height="50" style="border:1px solid #000000;"> </canvas> 
+            </td>
+            <td>
+              <!-- I added a blank space so that their on two sides... I will have to change this later because I don't know what I'm doing :) -->
+              <canvas id="myCanvas" width="150" height="50" style="border:1px solid #ffffff;"> </canvas> 
+            </td>
+            <td>
+              <p> opponent pairs</p>
+              <canvas id="myCanvas" width="100" height="50" style="border:1px solid #000000;"> </canvas> 
+            </td>
+          </tr>
+        </table>
+      </div>
       <div id="picture" class="picture-box"> <img width="400" src="underconstruction.jpeg" alt="oponent" /> </div>
 
        <br />
@@ -41,22 +59,22 @@
         <tr>
             <td>
               <button> <!-- card click changes on if it's your turn or the oponents-->
-                <svg aria-hidden="true" viewBox="0 0 100 100" height="150" width="100">
-                  <!--path d="M 95,5 95,95 5,95 Q 5,5 95,5" fill="green" /-->
+                <svg aria-hidden="true" viewBox="0 0 150 100" height="150" width="100">
+                  <path d="M60,25 Q95,10 95,40 Q95,50 60,50 Q95,50 95,80 Q95,95 60,85" fill="none" stroke ="green" stroke-width="8" stroke-linecap="round"></path>
                 </svg>
               </button>
             </td>
             <td>
               <button>
-                <svg aria-hidden="true" viewBox="0 0 100 100" height="150" width="100">
-                  <!--path d="M5,5 5,95 95,95 Q 95,5 5,5" fill="red" /-->
+                <svg aria-hidden="true" viewBox="0 0 150 100" height="150" width="100">
+                  <path d="M45,20 H105 L60,95" stroke="red" stroke-width="8" fill="none" stroke-linecap="round">
                 </svg>
               </button>
             </td>
             <td>
               <button>
-                <svg aria-hidden="true" viewBox="0 0 100 100" height="150" width="100">
-                  <!--path d="M5,5 5,95 95,95 Q 95,5 5,5" fill="red" /-->
+                <svg aria-hidden="true" viewBox="0 0 150 100" height="150" width="100">
+                  <path d="M75,20 L75,80" stroke="blue" stroke-width="10" stroke-linecap="round" fill="none">
                 </svg>
               </button>
             </td>
@@ -66,6 +84,10 @@
       <p>
         your cards!
       </p>
+      <p> Link to Scores page (will show up after games over) </p>
+      <form action="scores.html">
+          <input type="submit" value="Fish Caught!" />
+      </form>
 
         </main>
 
