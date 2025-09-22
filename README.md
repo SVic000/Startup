@@ -59,15 +59,15 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **HTML pages** - I did not complete this part of the deliverable.
-- [ ] **Proper HTML element usage** - I did not complete this part of the deliverable.
-- [ ] **Links** - I did not complete this part of the deliverable.
-- [ ] **Text** - I did not complete this part of the deliverable.
-- [ ] **3rd party API placeholder** - I did not complete this part of the deliverable.
-- [ ] **Images** - I did not complete this part of the deliverable.
-- [ ] **Login placeholder** - I did not complete this part of the deliverable.
-- [ ] **DB data placeholder** - I did not complete this part of the deliverable.
-- [ ] **WebSocket placeholder** - I did not complete this part of the deliverable.
+- [x] **HTML pages** - I planned out all 4 of my html pages
+- [x] **Proper HTML element usage** - I did complete this part of the deliverable.
+- [x] **Links** - Every page has a link to the webpages they have access too.
+- [x] **Text** - I did complete this part of the deliverable.
+- [x] **3rd party API placeholder** - I did complete this part of the deliverable. although I'm not sure which tag it should've been under so I just did a text.
+- [x] **Images** - I did complete this part of the deliverable. Although I plan on refining the html tags and whatnot once I'm more familiar with the pathing of React and CSS.
+- [x] **Login placeholder** - I did complete this part of the deliverable.
+- [x] **DB data placeholder** - I did complete this part of the deliverable.
+- [x] **WebSocket placeholder** - I did complete this part of the deliverable.
 
 ## 🚀 CSS deliverable
 
