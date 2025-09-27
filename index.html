@@ -5,19 +5,19 @@
         <meta charset="UTF-8" />
         <!-- Tell browsers not to scale the viewport automatically -->
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>CATfishGOFish HTML</title>
+        <title>CATfishGOFish CSS</title>
         <link rel="icon" href="favicon.ico" />
-    <link rel="stylesheet" href="main.css" />
+    <link rel="stylesheet" href="index.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" 
     integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous"
     />
     </head>
 
-    <body class="bg-success-subtle text-success-emphasis">
-      <header class = "container-fluid">
+    <body class="bg-success-subtle">
+      <header class = "container-fluid text-success-emphasis">
       <!-- Navigation elements -->
       <nav class = "navbar fixed-top">
-        <h1 class = "navbar-brand text-success-emphasis fixed-top">CatFishGoFish</h1>
+        <h1 class = "text-success-emphasis navbar-brand fixed-top"><b>CatFishGoFish</b></h1>
         <menu class="navbar-nav">
           <li class="nav-item"> 
             <a class="nav-link text-success" href="menu.html">Menu</a>
@@ -26,26 +26,27 @@
       </nav>
       </header>
 
-      <main class="p-3 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3">
-      <h1>Welcome to CatFishGoFish!</h1>
+      <main class="container-fluid text-center text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3">
+      <div>
+        <h1>𓆝 𓆟 𓆞 Welcome to <b>CatFishGoFish!</b> 𓆝 𓆟 𓆞 </h1>
       <form method="get" action="menu.html">
-        <div class="input-group mb-3">
-          <span class="input-group-text">Login</span>
-          <input class="form-control" type="text" placeholder="your@email.com" />
+        <div class="container input-group mb-3">
+          <button class="btn btn-light btn-outline-primary input-group-text text-primary-emphasis" type="submit"><b>Login</b></button>
+          <input class="form-control" type="Login" placeholder="your@email.com" />
         </div>
-        <div class="input-group mb-3">
-          <span class="input-group-text" >Password</span>
+        <div class="container input-group mb-3 ">
+          <button class="btn btn-light btn-outline-primary input-group-text text-primary-emphasis" type="submit"><b>Password</b></button>
+          <!--<span class="input-group-text text-primary-emphasis"><b>Password</b></span><-->
           <input class="form-control" type="password" placeholder="password" />
         </div>
-        <button class="btn btn-success" type="submit">Login</button>
-        <button class="btn btn-primary" type="submit">Create</button>
       </form>
+    </div>
     </main>
 
       <footer class="text-success">
         <div class="container-fluid">
-        <span>Author Name</span>
-        <a href="https://github.com/SVic000/Startup">GitHub StartUp!</a>
+        <span class="text-reset">Author Name</span>
+        <a class="text-reset text-success-emphasis" href="https://github.com/SVic000/Startup">GitHub StartUp!</a>
         </div>
       </footer>
     </body>
