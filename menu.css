@@ -1,0 +1,19 @@
+body {
+  display: flex;
+  flex-direction: column;
+  min-width: 30px;
+}
+
+main {
+  margin-top: 100px; /* Enough to clear the fixed navbar */
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+main div > div {
+  margin-bottom: 30px; /* Space between sections */
+}
+
+form {
+  margin-top: 10px;
+}

@@ -13,8 +13,8 @@
     integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous"
     />
     </head>
-    <body>
-      <header>
+
+    <body class = "bg-success-subtle">
       <header class = "container-fluid text-success-emphasis">
       <!-- Navigation elements -->
       <nav class = "navbar fixed-top">
@@ -33,17 +33,26 @@
       </nav>
       </header>
 
-        <main> <!-- add divs here? -->
-            <h4> A random cat fact from a third party API </h4>
-            <p> Find a fishing oponent! </p>
-            <form action="play.html">
-                <input type="submit" value="PLAY" />
-            </form>
+        <main class = "container text-center text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3">        
+            <div>
+                <div>
+                <h5 class = "fixed-top text-center text-primary-emphasis"> A random cat fact from a third party API </h5>
+                </div>    
+                <div>
+                <p> Find a fishing oponent! 🪝 </p>
+                <form action="play.html">
+                    <button class="btn btn-light btn-outline-info input-group-text btn-lg" type="submit"> <b>Play</b> </button>
+                </form>
+                </div>
+                <br />
 
-            <p> See winnings</p>
-            <form action="scores.html">
-                <input type="submit" value="Fish Caught!" />
-            </form>
+                <div>
+                <p> See winnings</p>
+                <form action="scores.html">
+                    <input type="submit" value="Fish Caught!" />
+                </form>
+                </div>
+            </div>
         </main>
       <footer class="text-success">
         <div class="container-fluid">
