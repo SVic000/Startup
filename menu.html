@@ -9,6 +9,7 @@
         <title>CATfishGOFish Menu</title>
         <link rel="icon" href="favicon.ico" />
         <link rel="stylesheet" href="index.css" />
+        <link rel="stylesheet" href="menu.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" 
     integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous"
     />
@@ -33,23 +34,25 @@
       </nav>
       </header>
 
-        <main class = "container text-center text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3">        
-            <div>
+        <main class = "container-fluid text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3">        
+            <div class="d-flex justify-content-center flex-column align-items-center">
                 <div>
-                <h5 class = "fixed-top text-center text-primary-emphasis"> A random cat fact from a third party API </h5>
+                <h5 class = "sticky-line text-center text-primary-emphasis"> A random cat fact from a third party API </h5>
                 </div>    
+                <div class="w-100 text-center sticky-line">
+                <p class="sticky-line"> Find a fishing oponent! 🪝 </p>
                 <div>
-                <p> Find a fishing oponent! 🪝 </p>
                 <form action="play.html">
-                    <button class="btn btn-light btn-outline-info input-group-text btn-lg" type="submit"> <b>Play</b> </button>
+                    <button class="btn btn-light btn-outline-warning input-group-text" style="font-size: 10vw; padding: 2vw 5vw;" type="submit"> <b>Play</b> </button>
                 </form>
+                </div>
                 </div>
                 <br />
 
-                <div>
+                <div class="w-100 text-center sticky-line">
                 <p> See winnings</p>
-                <form action="scores.html">
-                    <input type="submit" value="Fish Caught!" />
+                <form action="scores.html">      
+                    <button class="btn btn-light btn-outline-primary input-group-text btn-lg" type="submit"> <b> 𓆝 ⋆. </b> </button>
                 </form>
                 </div>
             </div>
