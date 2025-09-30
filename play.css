@@ -84,6 +84,9 @@ main {
 
 
 .card {
+  flex: 1 1 auto;
+  min-width: 50px;
+  font-size: clamp(2rem, 5vw, 6rem);
   display: none;
   background: none; 
   background-color: transparent !important;
@@ -106,7 +109,21 @@ main {
   display: flex;
 }
 
-@media (max-width: 375px) {
+.text-center form {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 0.5rem 0;
+}
+
+.text-center form button {
+  flex-shrink: 1;
+  max-width: 100%;
+  min-width: 150px;
+  white-space: nowrap;
+}
+
+@media (max-width: 375px){
   .pair-container {
     flex-direction: column;
     align-items: center;
@@ -129,4 +146,16 @@ main {
   main {
     flex: 1 100vh;
   }
+}
+
+@media (max-height: 700px) {
+      header {
+    display: none;
+  }
+  footer {
+    display: none;
+  }
+  main {
+    flex: 1 100vh;
+}
 }
