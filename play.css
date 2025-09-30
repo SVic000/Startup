@@ -1,0 +1,81 @@
+main {
+  display: flex;
+  flex-direction: column;
+}
+
+.top-menu {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.game {
+  width: 80vw;
+  height: 80vw;
+  position: absolute;
+  min-width: 350px;
+  min-height: 350px;
+  max-width: min(80vmin, 1000px);
+  max-height: min(80vmin, 1000px);
+}
+
+.question {
+    justify-content: center;
+}
+
+.pair-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 50%;
+    height: 100%;
+}
+
+
+.pair{
+    padding: 10px;
+}
+
+.hidden-checkbox {
+  position: absolute;
+  left: -9999px;
+  opacity: 0;
+}
+
+/* Style the Draw button */
+.toggle-button {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Card container */
+.card-container {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Card styling */
+.card {
+  display: none;
+  background: none; 
+  font-size: 6rem;
+  width: auto;
+  height: auto;
+  padding: 0;       
+  margin: 0 0.5rem;   
+  border: none;
+  text-align: center;
+  line-height: 1;
+}
+
+/* When checkbox is checked, show cards */
+#toggle-cards:checked ~ .card-container .card {
+  display: flex;
+}

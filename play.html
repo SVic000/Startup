@@ -8,6 +8,7 @@
         <title>CATfishGOFish Play</title>
         <link rel="icon" href="favicon.ico" />
         <link rel="stylesheet" href="index.css" />
+        <link rel="stylesheet" href="play.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" 
     integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous"
     />
@@ -29,71 +30,54 @@
       </nav>
       </header>
 
-      <main>
-        <form action="menu.html">
-          <input type="submit" value="Return to menu" />
-        </form>
-      <div class="question">
-        where question shows:
-        <span> Got any threes?</span>
-      </div>
-      <br />
-      <div> 
-        <table>
-          <tr>
-            <td>
-              <p> your pairs</p>
-              <canvas id="myCanvas" width="100" height="50" style="border:1px solid #000000;"> </canvas> 
-            </td>
-            <td>
-              <!-- I added a blank space so that their on two sides... I will have to change this later because I don't know what I'm doing :) -->
-              <canvas id="myCanvas" width="150" height="50" style="border:1px solid #ffffff;"> </canvas> 
-            </td>
-            <td>
-              <p> opponent pairs</p>
-              <canvas id="myCanvas" width="100" height="50" style="border:1px solid #000000;"> </canvas> 
-            </td>
-          </tr>
-        </table>
-      </div>
-      <div id="picture" class="picture-box"> <img width="400" src="underconstruction.jpeg" alt="oponent" /> </div>
 
-       <br />
-       <br />
-      <div>
-      <table>
-        <tr>
-            <td>
-              <button> <!-- card click changes on if it's your turn or the oponents-->
-                <svg aria-hidden="true" viewBox="0 0 150 100" height="150" width="100">
-                  <path d="M60,25 Q95,10 95,40 Q95,50 60,50 Q95,50 95,80 Q95,95 60,85" fill="none" stroke ="green" stroke-width="8" stroke-linecap="round"></path>
-                </svg>
-              </button>
-            </td>
-            <td>
-              <button>
-                <svg aria-hidden="true" viewBox="0 0 150 100" height="150" width="100">
-                  <path d="M45,20 H105 L60,95" stroke="red" stroke-width="8" fill="none" stroke-linecap="round">
-                </svg>
-              </button>
-            </td>
-            <td>
-              <button>
-                <svg aria-hidden="true" viewBox="0 0 150 100" height="150" width="100">
-                  <path d="M75,20 L75,80" stroke="blue" stroke-width="10" stroke-linecap="round" fill="none">
-                </svg>
-              </button>
-            </td>
-          </tr>
-      </table>
+      <main class="container-fluid text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3">
+          <div class="top-menu">
+          <form action="menu.html">      
+              <button class="btn btn-light input-group-text" type="submit"> <b> Return to Menu </b> </button>
+          </form>
+            </div>
+        <div class="question">
+          Where question shows:
+          <span> Got any threes?</span>
+        </div>
+      <div class="pair-container"> 
+        <div class="pair">
+              <p class="text-center"> Your Pairs <br/>
+              𖧋<br/>
+              𖧋<br/>
+              ●<br/>
+              ●<br/>
+              </p>
+          </div>
+        <div id="picture" class="picture-box pair"> <img width="300" src="underconstruction.jpeg" alt="oponent" /> </div>
+        <div class="pair">
+              <p class="text-center"> Opponent Pairs <br/>
+              𖧋<br/>
+              𖧋<br/>
+              𖧋<br/>
+              ●<br/>
+              </p>
+          </div>
       </div>
-      <p>
-        your cards!
-      </p>
+      <input type="checkbox" id="toggle-cards" class="hidden-checkbox" />
+      <label for="toggle-cards" class="toggle-button">Draw (click me)</label>
+
+      <!-- Card container that responds to toggle -->
+      <div class="card-container">
+        <div class="card">🂡</div>
+        <div class="card">🃁</div>
+        <div class="card">🃑</div>
+      </div>
+
+      <br/>
+
+      <div class="text-center">
       <p> Link to Scores page (will show up after games over) </p>
-      <form action="scores.html">
-          <input type="submit" value="Fish Caught!" />
-      </form>
+          <form action="scores.html">      
+              <button class="btn btn-light btn-outline-primary input-group-text btn-lg" type="submit"> <b> Fish Caught </b> </button>
+          </form>
+      </div>
 
         </main>
 
