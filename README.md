@@ -73,12 +73,12 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **Header, footer, and main content body** - I did not complete this part of the deliverable.
-- [ ] **Navigation elements** - I did not complete this part of the deliverable.
-- [ ] **Responsive to window resizing** - I did not complete this part of the deliverable.
-- [ ] **Application elements** - I did not complete this part of the deliverable.
-- [ ] **Application text content** - I did not complete this part of the deliverable.
-- [ ] **Application images** - I did not complete this part of the deliverable.
+- [x] **Header, footer, and main content body** - I made sure that for my websites, a header, footer, and main are all present.
+- [x] **Navigation elements** - All my navigation elements are present in this deliverable.
+- [x] **Responsive to window resizing** - I did complete this part of the deliverable.
+- [x] **Application elements** - I did complete this part of the deliverable. I even figured out how to make content show and hide via CSS.
+- [x] **Application text content** - I did complete this part of the deliverable. It's all cohesive as a website!
+- [x] **Application images** - I did complete this part of the deliverable. I found fun icons online, I don't know if they're royalty free or not so I plan on changing everything with my own content later.
 
 ## 🚀 React part 1: Routing deliverable
 
