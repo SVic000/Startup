@@ -1,56 +1,16 @@
-<!DOCTYPE HTML >
-<!-- will hold login -->
+<!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <!-- Tell browsers not to scale the viewport automatically -->
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>CATfishGOFish CSS</title>
-        <link rel="icon" href="favicon.ico" />
-    <link rel="stylesheet" href="index.css" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" 
-    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous"
-    />
-    </head>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
 
-    <body class="bg-success-subtle">
-      <header class = "container-fluid text-success-emphasis">
-      <!-- Navigation elements -->
-      <nav class = "navbar fixed-top">
-        <h1 class = "text-success-emphasis navbar-brand fixed-top"><b>CatFishGoFish</b></h1>
-        <menu class="navbar-nav">
-          <li class="nav-item"> 
-            <a class="nav-link text-success" href="menu.html">Menu</a>
-          </li>
-        </menu>
-      </nav>
-      </header>
-
-      <main class="container-fluid text-center text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3">
-      <div>
-        <h1 class="responsive-heading">𓆝 𓆟 𓆞 Welcome to <b>CatFishGoFish!</b> 𓆝 𓆟 𓆞 </h1>
-      <br/>
-        <form method="get" action="menu.html">
-        <div class="narrow-content input-group mb-3">
-          <span class="btn-light btn-outline-primary input-group-text text-primary-emphasis" type="text"><b>Login</b></span>
-          <input class="form-control" type="Login" placeholder="your@email.com" />
-        </div>
-        <div class="narrow-content input-group mb-3 ">
-          <span class=" btn-light btn-outline-primary input-group-text text-primary-emphasis" type="password"><b>Password</b></span>
-          <!--<span class="input-group-text text-primary-emphasis"><b>Password</b></span><-->
-          <input class="form-control" type="password" placeholder="password" />
-        </div>
-          <button type="submit" class="btn btn-light btn-outline-primary input-group-text"><b>Login</b></button>
-          <button type="submit" class="btn btn-light btn-outline-secondary input-group-text"><b>Create</b></button>
-      </form>
-    </div>
-    </main>
-
-      <footer class="text-success">
-        <div class="container-fluid">
-        <span class="text-reset">Author Name</span>
-        <a class="text-reset text-success-emphasis" href="https://github.com/SVic000/Startup">GitHub StartUp!</a>
-        </div>
-      </footer>
-    </body>
+    <title>Startup React</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script type="module" src="/index.jsx"></script>
+  </body>
 </html>
