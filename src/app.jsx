@@ -49,7 +49,7 @@ export default function App() {
         <Route path='*' element={<NotFound />} />
       </Routes>
 
-      <footer className="bg-dark text-white-50">
+      <footer className="text-succsess">
         <div className="container-fluid">
           <span className="text-reset">Author Name(s)</span>
           <a className="text-reset" href="https://github.com/webprogramming260/simon-react">

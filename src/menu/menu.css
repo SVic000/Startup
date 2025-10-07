@@ -1,4 +1,3 @@
-
 .sticky-line {
   padding: 0.5rem 1rem;
 }
@@ -9,12 +8,15 @@
     line-height: 1.3;
     padding: 1rem;
   }
+
   header {
     display: none;
-  }s
+  }
+
   footer {
     display: none;
   }
+
   main {
     flex: 1 100vh;
   }
