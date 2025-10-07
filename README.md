@@ -84,9 +84,9 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **Bundled using Vite** - I did not complete this part of the deliverable.
-- [ ] **Components** - I did not complete this part of the deliverable.
-- [ ] **Router** - I did not complete this part of the deliverable.
+- [x] **Bundled using Vite** - I followed what I did for Simon React on my own code
+- [x] **Components** - I did complete this part of the deliverable. My components are now different than it was, but I don't mind. The header is now completely static and doesn't change depending on which page you're on. That was too hard to figure out.
+- [x] **Router** - I did complete this part of the deliverable. (all sites route to eachother)
 
 ## 🚀 React part 2: Reactivity deliverable
 
