@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import './play.css'; // Make sure the file name matches
+import './play.css'; 
 
 export function Play() {
   const navigate = useNavigate();
