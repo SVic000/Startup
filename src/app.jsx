@@ -51,15 +51,16 @@ export default function App() {
 
       <footer className="text-succsess">
         <div className="container-fluid">
-          <span className="text-reset">Author Name(s)</span>
-          <a className="text-reset" href="https://github.com/webprogramming260/simon-react">
-            Source
+          <span className="text-reset">Author Name</span>
+          <a className="text-reset" href="https://github.com/SVic000/Startup/">
+            Github!
           </a>
         </div>
       </footer>
     </div>
   </BrowserRouter>
   );
+  
 function NotFound() {
   return <main className="container-fluid bg-secondary text-center">404: Return to sender. Address unknown.</main>;
 }
