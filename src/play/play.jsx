@@ -17,6 +17,9 @@ export function Play() {
   const [opponentHand, setOpponentHand] = useState([]);
   const opponentHandRef = useRef([]); // refs for mock hands
   const availDeckRef = useRef([]); // refs for mock hands
+
+  const [playerPairs, setPlayerPair] = useState(0);
+  const [opponentPairs, setOpponentPair] = useState(0);
   
   const [message, setMessage] = useState('');
 
@@ -25,13 +28,13 @@ export function Play() {
     setAvailDeck(newDeck);
     setPlayerHand(newHand);
 
-    if (gamephase === 'setup') {
+    if (gamephase === 'setup') { // this is what locks the player to only being able to draw 3 cards at the start
       setDrawCount(prev => prev + 1);
     } else {
       setDrawCount(1);
     }
   };
-
+  
   // Update refs
   useEffect(() => {
     opponentHandRef.current = opponentHand;
@@ -71,7 +74,7 @@ export function Play() {
             setMessage('Your turn! Draw 3 cards.');
             setCurrentTurn('player');
           }
-        }, 800);
+        }, 900);
       }
     }
   }, [hasStarted, startingPlayer]);
@@ -91,22 +94,28 @@ export function Play() {
           opponentDraw();
           draws++;
         }
-        
         if (draws >= 3) {
           clearInterval(interval);
-          // Now both players have 3 cards - transition to main phase
-          const firstTurnInMain = startingPlayer === 0 ? 'player' : 'opponent';
-          setMessage("Both players have cards! Time to fish!");
-          setGamePhase('main');
-          setCurrentTurn(firstTurnInMain);
-          setStartingPlayer(null);
         }
-      }, 800);
+      }, 900);
       
       // Cleanup function to prevent memory leaks
       return () => clearInterval(interval);
     }
   }, [playerHand.length, opponentHand.length, gamephase, startingPlayer]);
+
+  // check if both players have 3 cards and if the game is in setup, then choose who starts
+  // and change the gamephase to actually start the game!
+  useEffect(() => {
+    if (gamephase === 'setup' && playerHand.length === 3 && opponentHand.length === 3) {
+          const firstTurnInMain = startingPlayer === 0 ? 'player' : 'opponent';
+          setMessage("Both players have cards! Time to fish!");
+          setGamePhase('main');
+          setCurrentTurn(firstTurnInMain);
+          setStartingPlayer(null);
+    };
+
+  }, [gamephase, startingPlayer, playerHand.length, opponentHand.length]);
 
   // nows the time to start the actual game
   // switch between both players
@@ -114,12 +123,6 @@ export function Play() {
   // up pair count for that player.
   // make a mock opponent moveset. maybe, using their array, make them ask a random card question.
   // if player has card they have to click it to give it to them. I dont know
-
-  console.log("Game Phase:", gamephase);
-  console.log("Starting Player:", startingPlayer);
-  console.log("Current Turn:", current_turn);
-  console.log("Player Hand:", playerHand);
-  console.log("Opponent Hand:", opponentHand);
 
   return (
     <main className="container-fluid text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3">
