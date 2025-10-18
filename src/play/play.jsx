@@ -11,18 +11,25 @@ export function Play() {
   const [drawCount, setDrawCount] = useState(0);
   const [hasStarted, setHasStarted] = useState(false); 
   const [gamephase, setGamePhase] = useState('setup'); // setup | main
+  const [selectedCards, setSelectedCards] = useState([]); // to check if the cards the playrees selecting match for pair
+  const [selectedCardForAsk, setSelectedCardForAsk] = useState(null); // selected for asking a quesiton to opponent
   
+  const [opponentQuestion, setOpponentQuestion] = useState(null);
+
+
   const [availDeck, setAvailDeck] = useState([1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9]);
   const [playerHand, setPlayerHand] = useState([]);
   const [opponentHand, setOpponentHand] = useState([]);
   const opponentHandRef = useRef([]); // refs for mock hands
   const availDeckRef = useRef([]); // refs for mock hands
 
-  const [playerPairs, setPlayerPair] = useState(0);
+  const [playerPairs, setPlayerPair] = useState(0); // pair tracker! we gotta know who won!
   const [opponentPairs, setOpponentPair] = useState(0);
   
   const [message, setMessage] = useState('');
+  const [opponentWords, setOpponentWords] = useState('');
 
+  // player draw function
   function handleDraw() {
     const {newDeck, newHand } = draw(availDeck, playerHand);
     setAvailDeck(newDeck);
@@ -34,7 +41,114 @@ export function Play() {
       setDrawCount(1);
     }
   };
-  
+
+  // player pair function (card clicked check)
+  function handleCardClick(cardValue, index) {
+    if (current_turn !== 'player' || gamephase !== 'main') return; // not your turn in main game!
+    if (selectedCardForAsk) return; // if in middle of asking opponent for card, leave
+
+
+    if (selectedCards.some(selected => selected.index === index)) return; // can't click the same card twice
+    const newSelection = [...selectedCards, {value: cardValue, index}];
+
+    if (newSelection.length ===2) { // check for pair on cards selected
+      checkForPair(newSelection);
+    }
+
+    // check for valid pairs in selected cards
+    function checkForPair(selection) {
+      const [card1,card2] = selection;
+
+      if (card1.value == card2.value) { // found a pair!
+        setPlayerPair(prev => prev +1);
+        setMessage('You caught a fish! Nice Pair');
+        const newHand = playerHand.filter((_, i) => i !== card1.index && i !== card2.index);
+        setPlayerHand(newHand);
+        setSelectedCards([]);
+      } else {
+        setMessage("Not a match! Keep fishing!");
+      }
+    }
+    setTimeout(() => setSelectedCards([], 1000)); // reset selected cards after function runs
+  };
+
+  function startAsking() { // Start asking - player selects a card to ask opponent
+    if(current_turn !== 'player' || selectedCardForAsk) return; 
+    setMessage('Click a card in your hand to ask them about it!');
+  };
+
+  function handleAskCardsSelection(cardValue){
+    setSelectedCardForAsk(cardValue);
+    setMessage(`You've asked Frank if he has any ${cardValue}!`); //
+    setOpponentWords('...'); // you asked them, let it seem like they're thinking
+
+    setTimeout(() => {
+      if (opponentHand.includes(cardValue)){ // opponent has the card, they'll now be handing it over
+        const matchingCard = opponentHand.filter(card => card == cardValue);
+        const newOpponentHand = opponentHand.filter(card => card !== cardValue);
+        const newPlayerHand = [...playerHand, ...matchingCard];
+
+        setOpponentHand(newOpponentHand);
+        setPlayerHand(newPlayerHand);
+        setMessage(`Frank gave you a ${cardValue}!`);
+        setOpponentWords("I didn't want that card anyway....");
+
+        setSelectedCardForAsk(null);
+      } else {
+        setMessage(`Frank doesn't have any ${cardValue}s. Go Fish!`);
+        setOpponentWords("Heh");
+      }
+    }, 1000)
+  }
+
+  // OPPONENT MOVES
+  function opponentAsk() {
+    if (current_turn !== "opponent") return;
+
+    // robot ask for random card in their hand and waits for plaery
+    const randomCard = opponentHand[Math.floor(Math.random() * opponentHand.length)];
+    setOpponentQuestion(randomCard);
+    setMessage('Frank is asking a quesiton!')
+    setOpponentWords(`Do you have any ${randomCard}s?`)
+  }
+
+  // Handle player giving card to opponent
+  function handleGiveCardToOpponent(cardValue) {
+    if (current_turn !== 'opponent' || !opponentQuestion) return;
+
+    if (cardValue === opponentQuestion) {
+      // player has the card! move it over
+      const newplayerhand = playerHand.filter(card => card != cardValue);
+      const newopponenthand = [...opponentHand, cardValue];
+
+      setPlayerHand(newplayerhand);
+      setOpponentHand(newopponenthand);
+      setMessage(`You gave ${cardValue} to opponent`);
+      setOpponentWords(`Thanks for the ${cardValue}.`)
+      setOpponentQuestion(null);
+
+      setTimeout(() => opponentAsk(), 1000); // frank continues turn
+    } else {
+      setMessage("That's not the card Frank asked for!")
+    }
+  }
+
+  function handleGoFISH() {
+    if (current_turn !== 'opponent') return;
+
+    setMessage("Go fish! Frank draws a card");
+    setOpponentWords("Rats. I need that card.");
+    opponentDraw();
+    setOpponentQuestion(null);
+    // Franks turn ends
+    setTimeout(() => {
+      setCurrentTurn('player');
+      setMessage('');
+      setOpponentWords('');
+    }, 1500);
+  }
+
+
   // Update refs
   useEffect(() => {
     opponentHandRef.current = opponentHand;
@@ -61,7 +175,7 @@ export function Play() {
         setMessage('You start! Draw 3 cards.');
         setCurrentTurn('player');
       } else {
-        setMessage("They start! They'll draw 3 cards...");
+        setMessage("Frank starts! He's drawing 3 cards!");
         setCurrentTurn('opponent');
         
         // Opponent draws 3 cards first
@@ -84,7 +198,7 @@ export function Play() {
     // If player has drawn 3 cards but opponent doesn't have 3 yet
     if (gamephase === 'setup' && playerHand.length === 3 && opponentHand.length < 3) {
       setCurrentTurn("opponent")
-      setMessage('Opponent drawing their 3 cards...');
+      setMessage('Frank is Drawing 3 cards!');
       
       let draws = opponentHand.length; // Start from current count
       const neededDraws = 3 - opponentHand.length;
@@ -123,6 +237,13 @@ export function Play() {
   // up pair count for that player.
   // make a mock opponent moveset. maybe, using their array, make them ask a random card question.
   // if player has card they have to click it to give it to them. I dont know
+  useEffect(() => {
+    if(gamephase === 'main'){ // let the game begin
+      if (current_turn === 'opponent' && !opponentQuestion) {
+        setTimeout(() => opponentAsk(), 1000);
+      }
+    }
+  },[current_turn, gamephase, opponentQuestion]);
 
   return (
     <main className="container-fluid text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3">
@@ -177,7 +298,7 @@ export function Play() {
           onClick={handleDraw}
           disabled={
             current_turn !== 'player' ||
-            (gamephase === 'setup' && playerHand.length >= 3) || // Use playerHand.length instead of drawCount
+            (gamephase === 'setup' && playerHand.length >= 3) ||
             (gamephase === 'main' && drawCount >= 1)
           }
         >
@@ -187,11 +308,37 @@ export function Play() {
 
       <div className="card-toggle-wrapper">
         <div className="card-container">
-          {playerHand.map((card, index) => (
-            <button key={index} className={`card card-${card}`}>
-              {card}
-            </button>
-          ))}
+          {playerHand.map((card, index) => { // making and updating player cards
+            const isSelected = selectedCards.some(selected => selected.index === index);
+            const isQuestioned = opponentQuestion === card;
+            return (
+              <button
+              key={index}
+              className={
+                `card 
+                card-${card} 
+                ${ isSelected ? 'card-selected' : ''}
+                ${ isQuestioned ? 'card-questioned' : ''}
+              `}
+              onClick={() => {
+                if (current_turn === 'player' && gamephase === 'main') {
+                  if (selectedCardForAsk !==null) {
+                    // in asking card mode
+                    handleAskCardsSelection(card);
+                  } else { // normal turn - handle pair making
+                    handleCardClick(card, index);
+                  }
+                } else if (current_turn === 'opponent' && opponentQuestion) {
+                  handleGiveCardToOpponent(card);
+                }
+              }}
+              disabled={
+                (current_turn === 'opponent' && !opponentQuestion)
+              }>
+                {card}
+              </button>
+            );
+          })}
         </div>
       </div>
 

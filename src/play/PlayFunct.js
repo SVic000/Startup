@@ -1,6 +1,5 @@
 // Hold everything in logic here
 
-
 export function draw(deck, hand) {
     if(deck.length === 0) {
         // no cards left in pile
@@ -17,6 +16,8 @@ export function draw(deck, hand) {
     return { newDeck, newHand };
 }
 
+export function opponentpaircheck(ophand) {
+    return ophand.some((item, index) => ophand.indexOf(item) !== index);
+}
 
-
-// maybe add here the first game conditions? like turns and whatnot
+// need function to handle 
