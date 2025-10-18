@@ -16,8 +16,4 @@ export function draw(deck, hand) {
     return { newDeck, newHand };
 }
 
-export function opponentpaircheck(ophand) {
-    return ophand.some((item, index) => ophand.indexOf(item) !== index);
-}
-
 // need function to handle 

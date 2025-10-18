@@ -18,6 +18,8 @@ main {
   display: flex;
   justify-content: flex-end;
   width: 100%;
+  padding: 0px;
+  margin: 0px;
 }
 .message_you{
   color: rgb(58, 138, 86) !important;
@@ -25,6 +27,17 @@ main {
 
 .message_them {
   color: rgb(184, 19, 63) !important;
+}
+
+#draw {
+  color:rgb(221, 249, 221);
+  padding: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
+  background: #4b80c1;
+  border: none;
+  border-radius: 8px;
+
 }
 
 .question {

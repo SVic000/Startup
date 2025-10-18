@@ -4,6 +4,7 @@ import { draw } from './PlayFunct';
 import './play.css';
 
 export function Play() {
+  //  ----- CONSTANTS AND STATES -----------
   const navigate = useNavigate();
 
   const [current_turn, setCurrentTurn] = useState(null); // player | opponent
@@ -15,6 +16,7 @@ export function Play() {
   const [selectedCardForAsk, setSelectedCardForAsk] = useState(null); // selected for asking a quesiton to opponent
   
   const [opponentQuestion, setOpponentQuestion] = useState(null);
+  const [goFishContext, setGoFishContext] = useState(null); // 'player-ask' | 'opponent-ask'
 
 
   const [availDeck, setAvailDeck] = useState([1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9]);
@@ -29,7 +31,9 @@ export function Play() {
   const [message, setMessage] = useState('');
   const [opponentWords, setOpponentWords] = useState('');
 
-  // player draw function
+  // ---------------------------------------------------------
+
+  // ------ Player --- Draw --------
   function handleDraw() {
     const {newDeck, newHand } = draw(availDeck, playerHand);
     setAvailDeck(newDeck);
@@ -40,44 +44,57 @@ export function Play() {
     } else {
       setDrawCount(1);
     }
+    if (goFishContext === 'player-ask') { // draw when told GO FISH
+      setSelectedCardForAsk(null);
+      setGoFishContext(null);
+      setCurrentTurn('opponent');
+      setMessage("Frank's turn...");
+    }
   };
+
+  // Check pairs function
+  function checkForPair(selection) {
+    const [card1,card2] = selection;
+    if (card1.value == card2.value) {
+      setPlayerPair(prev => prev +1);
+      setMessage('You caught a fish! Nice Pair');
+      const newHand = playerHand.filter((_, i) => i !== card1.index && i !== card2.index);
+      setPlayerHand(newHand);
+      setSelectedCards([]);
+    } else {
+      setMessage("Not a match! Keep fishing!");
+      setTimeout(() => setSelectedCards([]), 1000);
+    }
+  }
 
   // player pair function (card clicked check)
   function handleCardClick(cardValue, index) {
     if (current_turn !== 'player' || gamephase !== 'main') return; // not your turn in main game!
     if (selectedCardForAsk) return; // if in middle of asking opponent for card, leave
 
+    const isAlreadySelected = selectedCards.some(selected => selected.index === index);
+    if (isAlreadySelected) {
+      setSelectedCards(selectedCards.filter(selected => selected.index !== index))
+      return;
+    }
 
-    if (selectedCards.some(selected => selected.index === index)) return; // can't click the same card twice
     const newSelection = [...selectedCards, {value: cardValue, index}];
 
-    if (newSelection.length ===2) { // check for pair on cards selected
+    if(newSelection.length == 2) {
+      setSelectedCards(newSelection);
       checkForPair(newSelection);
+    } else {
+      setSelectedCards(newSelection)
     }
+  }
 
-    // check for valid pairs in selected cards
-    function checkForPair(selection) {
-      const [card1,card2] = selection;
-
-      if (card1.value == card2.value) { // found a pair!
-        setPlayerPair(prev => prev +1);
-        setMessage('You caught a fish! Nice Pair');
-        const newHand = playerHand.filter((_, i) => i !== card1.index && i !== card2.index);
-        setPlayerHand(newHand);
-        setSelectedCards([]);
-      } else {
-        setMessage("Not a match! Keep fishing!");
-      }
-    }
-    setTimeout(() => setSelectedCards([], 1000)); // reset selected cards after function runs
-  };
-
-  function startAsking() { // Start asking - player selects a card to ask opponent
-    if(current_turn !== 'player' || selectedCardForAsk) return; 
+    function startAsking() { // sets up asking
+    if (current_turn !== 'player' || selectedCardForAsk) return; 
     setMessage('Click a card in your hand to ask them about it!');
-  };
+  }
 
-  function handleAskCardsSelection(cardValue){
+  // click a card and ask about it
+  function handleAskCardsSelection(cardValue) {
     setSelectedCardForAsk(cardValue);
     setMessage(`You've asked Frank if he has any ${cardValue}!`); //
     setOpponentWords('...'); // you asked them, let it seem like they're thinking
@@ -97,11 +114,12 @@ export function Play() {
       } else {
         setMessage(`Frank doesn't have any ${cardValue}s. Go Fish!`);
         setOpponentWords("Heh");
+        setGoFishContext('player-ask'); //
       }
     }, 1000)
   }
 
-  // OPPONENT MOVES
+  // ------------- OPPONENT MOVES ----------------
   function opponentAsk() {
     if (current_turn !== "opponent") return;
 
@@ -110,14 +128,19 @@ export function Play() {
     setOpponentQuestion(randomCard);
     setMessage('Frank is asking a quesiton!')
     setOpponentWords(`Do you have any ${randomCard}s?`)
+    setGoFishContext('opponent-ask');
   }
 
-  // Handle player giving card to opponent
+  // --- player handing card to Frank --
   function handleGiveCardToOpponent(cardValue) {
     if (current_turn !== 'opponent' || !opponentQuestion) return;
 
     if (cardValue === opponentQuestion) {
       // player has the card! move it over
+
+      const cardIndex = playerHand.indexOf(cardValue);
+      setSelectedCardForAsk([{value: cardValue, index: cardIndex}])
+
       const newplayerhand = playerHand.filter(card => card != cardValue);
       const newopponenthand = [...opponentHand, cardValue];
 
@@ -127,19 +150,47 @@ export function Play() {
       setOpponentWords(`Thanks for the ${cardValue}.`)
       setOpponentQuestion(null);
 
-      setTimeout(() => opponentAsk(), 1000); // frank continues turn
+        // After successful card transfer
+        if (newopponenthand.length > 0) {
+        setTimeout(() => opponentAsk(), 1000); // Frank Continues turn
+        } else {
+        // End turn if no cards left
+        setCurrentTurn('player');
+}
     } else {
       setMessage("That's not the card Frank asked for!")
     }
   }
 
-  function handleGoFISH() {
-    if (current_turn !== 'opponent') return;
+  function checkOpponentPairs() {
+  const cardCounts = {};
+  opponentHand.forEach(card => {
+    cardCounts[card] = (cardCounts[card] || 0) + 1;
+  });
+  
+  Object.entries(cardCounts).forEach(([card, count]) => {
+    if (count >= 2) {
+      // Remove pairs from opponent hand
+      const newOpponentHand = opponentHand.filter(c => c !== parseInt(card));
+      setOpponentHand(newOpponentHand);
+      setOpponentPair(prev => prev + 1);
+    }
+  });
+}
 
+function handlePlayerGoFISH() {
+  setMessage("Frank doesn't seem to have that card!");
+  setOpponentWords("Go Fish! HA");
+  setSelectedCardForAsk(null);
+  setGoFishContext(null);
+}
+
+  function handleOpponentGoFISH() {
     setMessage("Go fish! Frank draws a card");
     setOpponentWords("Rats. I need that card.");
     opponentDraw();
     setOpponentQuestion(null);
+    setGoFishContext(null);
     // Franks turn ends
     setTimeout(() => {
       setCurrentTurn('player');
@@ -237,6 +288,13 @@ export function Play() {
   // up pair count for that player.
   // make a mock opponent moveset. maybe, using their array, make them ask a random card question.
   // if player has card they have to click it to give it to them. I dont know
+  // ---------------- MAIN GAME STARTS -----------
+  useEffect(() => {
+  if (gamephase === 'main') {
+    checkOpponentPairs();
+  }
+}, [opponentHand, gamephase]);
+
   useEffect(() => {
     if(gamephase === 'main'){ // let the game begin
       if (current_turn === 'opponent' && !opponentQuestion) {
@@ -244,6 +302,8 @@ export function Play() {
       }
     }
   },[current_turn, gamephase, opponentQuestion]);
+
+  console.log(selectedCards);
 
   return (
     <main className="container-fluid text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3">
@@ -263,8 +323,9 @@ export function Play() {
 
       <div className="text-center my-3" id="question">
         <b>{message}</b>
-        <div> <span> Player Hooks: {playerHand.length}</span> | <span>Opponent Hooks: {opponentHand.length}</span></div>
-      </div>
+         </div>
+
+      <div className='text-center' id='frankswords'> {opponentWords} </div>
 
       <div className="pair-container">
         <div className="pair">
@@ -292,18 +353,48 @@ export function Play() {
         </div>
       </div>
 
-      <div>
-        <button
-          id="draw"
-          onClick={handleDraw}
-          disabled={
-            current_turn !== 'player' ||
-            (gamephase === 'setup' && playerHand.length >= 3) ||
-            (gamephase === 'main' && drawCount >= 1)
-          }
-        >
-          Draw
-        </button>
+      <div className="button-holder">
+            {/* Ask Button */}
+            {current_turn === 'player' && gamephase === 'main' && selectedCardForAsk === null && playerHand.length > 0 && (
+              <button id="ask" onClick={startAsking}>
+              Ask Opponent
+              </button>
+            )}
+            
+            <button
+              id="draw"
+              onClick={handleDraw}
+              disabled={
+                current_turn !== 'player' ||
+                (gamephase === 'setup' && playerHand.length >= 3) ||
+                (gamephase === 'main' && drawCount >= 1 && goFishContext !== 'player-ask')
+              }
+            >
+              <b>{goFishContext === 'player-ask' ? 'Go Fish' : 'Draw'}</b>
+            </button>
+
+            {/* Cancel Ask Button */}
+            {current_turn === 'player' && selectedCardForAsk !== null && (
+              <button id="cancel-ask" onClick={() => {
+                setSelectedCardForAsk(null);
+                setMessage("Your turn");
+                setOpponentWords('');
+                setGoFishContext(null);
+              }}>
+                Cancel Ask
+              </button>
+            )}
+            
+            {/* End Turn Button */}
+            {current_turn === 'player' && gamephase === 'main' && selectedCardForAsk === null && availDeck.length === 0 && (
+              <button id="end-turn" onClick={() => {
+                setCurrentTurn('opponent');
+                setMessage("Frank's turn...");
+                setSelectedCards([]);
+              }}>
+                End Turn
+              </button>
+  )}
       </div>
 
       <div className="card-toggle-wrapper">
