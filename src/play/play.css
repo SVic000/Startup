@@ -29,6 +29,11 @@ main {
   color: rgb(184, 19, 63) !important;
 }
 
+.question {
+  text-align: center;
+  margin: 1rem 0;
+}
+
 #draw {
   color:rgb(221, 249, 221);
   padding: 10px;
@@ -40,9 +45,38 @@ main {
 
 }
 
-.question {
-  text-align: center;
-  margin: 1rem 0;
+#ask {
+  border: none;
+}
+
+#go-fish {
+  border: none;
+
+}
+
+#cancel-ask {
+  border: none;
+
+}
+
+#go-fish-opponent {
+  border: none;
+
+}
+
+#end-turn {
+  border: none;
+
+}
+
+.card-selected {
+  border: none;
+
+}
+
+.card-questioned {
+  border: none;
+
 }
 
 .pair-container {

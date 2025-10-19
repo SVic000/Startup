@@ -20,7 +20,7 @@ export function Play() {
   const [opponentQuestion, setOpponentQuestion] = useState(null); // what Franks asking player
   const [goFishContext, setGoFishContext] = useState(null); // Whether the go fish is for you or them
 
-  const [availDeck, setAvailDeck] = useState([1,1,2,2,3,3,4,4]);
+  const [availDeck, setAvailDeck] = useState([1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9]);
   const [playerHand, setPlayerHand] = useState([]);
   const [opponentHand, setOpponentHand] = useState([]);
   const opponentHandRef = useRef([]);
@@ -442,6 +442,7 @@ export function Play() {
     <main className="container-fluid text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3">
       <div className="top-menu">
         <button
+          id = 'menu-button'
           type="button"
           className="btn btn-light input-group-text"
           onClick={() => navigate('/menu')}
@@ -586,7 +587,6 @@ export function Play() {
                 disabled={current_turn === 'opponent' && !opponentQuestion}
               >
                 {card}
-                {isQuestioned && <div className="questioned-indicator">Frank wants this!</div>}
               </button>
             );
           })}
