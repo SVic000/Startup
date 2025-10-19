@@ -15,7 +15,7 @@ export function Play() {
   const [gamephase, setGamePhase] = useState('setup'); // setup | main | end
   const [selectedCards, setSelectedCards] = useState([]); // which cards the player is seleciting
   const [selectedCardForAsk, setSelectedCardForAsk] = useState(null); // just one card selected, you can ask a question on that card
-  const [frankFace, setFrankFace] = useState('Default') // Default | Declines | Shocked | Annoyed | Excited | End
+  const [frankFace, setFrankFace] = useState('Default') // Default | No | Shocked | Annoyed | Excited | GameEnd
   
   const [opponentQuestion, setOpponentQuestion] = useState(null); // what Franks asking player
   const [goFishContext, setGoFishContext] = useState(null); // Whether the go fish is for you or them
@@ -125,7 +125,7 @@ export function Play() {
       } else {
         setMessage(`Frank doesn't have any ${selectedCardValue}s. Go Fish!`);
         setOpponentWords(`Heh. I dont have any ${selectedCardValue}s`);
-        setFrankFace('Decline')
+        setFrankFace('No')
         setGoFishContext('player-ask');
       }
     }, 1000)
@@ -292,7 +292,7 @@ export function Play() {
     setCurrentTurn(null);
 
     setTimeout(() => {
-      setFrankFace('End')
+      setFrankFace('GameEnd')
       if (playerPairs > opponentPairs) {
         setMessage("You won! Greatest fisher here!");
         setOpponentWords("Oof, you were a strong opponent! Good game!");
