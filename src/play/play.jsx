@@ -7,19 +7,20 @@ export function Play() {
   //  ----- CONSTANTS AND STATES -----------
   const navigate = useNavigate();
 
-  const [askedQuestion, setAskedQuestion] = useState(0);
-  const [current_turn, setCurrentTurn] = useState(null);
+  const [askedQuestion, setAskedQuestion] = useState(0); // 0 | 1
+  const [current_turn, setCurrentTurn] = useState(null); // player | opponent
   const [startingPlayer, setStartingPlayer] = useState(Math.floor(Math.random() * 2));
-  const [drawCount, setDrawCount] = useState(0);
-  const [hasStarted, setHasStarted] = useState(false); 
-  const [gamephase, setGamePhase] = useState('setup');
-  const [selectedCards, setSelectedCards] = useState([]);
-  const [selectedCardForAsk, setSelectedCardForAsk] = useState(null);
+  const [drawCount, setDrawCount] = useState(0); // limits players draw amounts
+  const [hasStarted, setHasStarted] = useState(false); // checks presets
+  const [gamephase, setGamePhase] = useState('setup'); // setup | main | end
+  const [selectedCards, setSelectedCards] = useState([]); // which cards the player is seleciting
+  const [selectedCardForAsk, setSelectedCardForAsk] = useState(null); // just one card selected, you can ask a question on that card
+  const [frankFace, setFrankFace] = useState('Default') // Default | Declines | Shocked | Annoyed | Excited | End
   
-  const [opponentQuestion, setOpponentQuestion] = useState(null);
-  const [goFishContext, setGoFishContext] = useState(null);
+  const [opponentQuestion, setOpponentQuestion] = useState(null); // what Franks asking player
+  const [goFishContext, setGoFishContext] = useState(null); // Whether the go fish is for you or them
 
-  const [availDeck, setAvailDeck] = useState([1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9]);
+  const [availDeck, setAvailDeck] = useState([1,1,2,2,3,3,4,4]);
   const [playerHand, setPlayerHand] = useState([]);
   const [opponentHand, setOpponentHand] = useState([]);
   const opponentHandRef = useRef([]);
@@ -28,8 +29,8 @@ export function Play() {
   const [playerPairs, setPlayerPair] = useState(0);
   const [opponentPairs, setOpponentPair] = useState(0);
   
-  const [message, setMessage] = useState('');
-  const [opponentWords, setOpponentWords] = useState('');
+  const [message, setMessage] = useState(''); // guides player
+  const [opponentWords, setOpponentWords] = useState(''); // hard coded opponent words
 
   // ------ Player Draw Function --------
   function handleDraw() {
@@ -102,7 +103,9 @@ export function Play() {
     setSelectedCards([]);
 
     setTimeout(() => {
+
       if (opponentHand.includes(selectedCardValue)) {
+        setFrankFace('Shocked');
         const matchincard = opponentHand.filter(card => card === selectedCardValue);
         const newOpponentHand = opponentHand.filter(card => card !== selectedCardValue);
         const newPlayerHand = [...playerHand, ...matchincard];
@@ -111,6 +114,9 @@ export function Play() {
         setPlayerHand(newPlayerHand);
         setMessage(`Frank gave you a ${selectedCardValue}!`);
         setOpponentWords("I didn't want that card anyway....");
+        setTimeout(()=> {
+          setFrankFace("Annoyed");
+        }, 900);
         setSelectedCardForAsk(null);
       
         setTimeout(() => {
@@ -119,10 +125,12 @@ export function Play() {
       } else {
         setMessage(`Frank doesn't have any ${selectedCardValue}s. Go Fish!`);
         setOpponentWords(`Heh. I dont have any ${selectedCardValue}s`);
+        setFrankFace('Decline')
         setGoFishContext('player-ask');
       }
     }, 1000)
   }
+  console.log(opponentHand)
 
   // ------------- OPPONENT MOVES ----------------
   function opponentAsk() {
@@ -136,6 +144,7 @@ export function Play() {
     setOpponentQuestion(randomCard);
     setMessage('Frank is asking a question!')
     setOpponentWords(`Do you have any ${randomCard}s?`)
+    setFrankFace('Default')
     setAskedQuestion(1);
     setGoFishContext('opponent-ask');
   }
@@ -153,7 +162,8 @@ export function Play() {
       setPlayerHand(newplayerhand);
       setOpponentHand(newopponenthand);
       setMessage(`You gave ${cardValue} to opponent`);
-      setOpponentWords(`Thanks for the ${cardValue}.`)
+      setOpponentWords(`Thanks for the ${cardValue}.`);
+      setFrankFace('Excited');
       setOpponentQuestion(null);
       
       setTimeout(() => {
@@ -162,6 +172,7 @@ export function Play() {
         setSelectedCards([]);
         setAskedQuestion(0);
         setOpponentWords('');
+        setFrankFace('Default');
         checkGameEndConditions();
       }, 1500)
     } else {
@@ -206,12 +217,14 @@ export function Play() {
   function handleOpponentGoFISH() {
     setMessage("Go fish! Frank draws a card");
     setOpponentWords("Rats. I need that card.");
+    setFrankFace('Annoyed')
     opponentDraw();
     setOpponentQuestion(null);
     setGoFishContext(null);
     
     setTimeout(() => {
       setCurrentTurn('player');
+      setFrankFace('Default');
       setAskedQuestion(0);
       setMessage('Select a card to ask Frank!');
       setOpponentWords('');
@@ -279,6 +292,7 @@ export function Play() {
     setCurrentTurn(null);
 
     setTimeout(() => {
+      setFrankFace('End')
       if (playerPairs > opponentPairs) {
         setMessage("You won! Greatest fisher here!");
         setOpponentWords("Oof, you were a strong opponent! Good game!");
@@ -457,7 +471,7 @@ export function Play() {
         </div>
 
         <div className="pair picture-box">
-          <img id="cat" src="/underconstruction.jpeg" alt="opponent" />
+          <img id="cat" src={`/Frank${frankFace}.PNG`} alt={`${frankFace} expression`}/>
         </div>
 
         <div className="pair">
