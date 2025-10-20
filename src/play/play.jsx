@@ -164,7 +164,6 @@ export function Play() {
       setMessage(`You gave ${cardValue} to opponent`);
       setOpponentWords(`Thanks for the ${cardValue}.`);
       setFrankFace('Excited');
-      setOpponentQuestion(null);
       
       setTimeout(() => {
         setCurrentTurn('player');
@@ -173,6 +172,7 @@ export function Play() {
         setAskedQuestion(0);
         setOpponentWords('');
         setFrankFace('Default');
+        setOpponentQuestion(null);
         checkGameEndConditions();
       }, 1500)
     } else {
@@ -437,7 +437,12 @@ export function Play() {
       }, 1000);
     }
   }, [availDeck.length, playerHand.length, opponentHand.length, gamephase]);
-
+  useEffect(()=>{
+    if(gamephase === 'end') {
+      setFrankFace('GameEnd');
+    }
+  }
+  )
   return (
     <main className="container-fluid text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3">
       <div className="top-menu">
@@ -472,7 +477,7 @@ export function Play() {
         </div>
 
         <div className="pair picture-box">
-          <img id="cat" src={`/Frank${frankFace}.PNG`} alt={`${frankFace} expression`}/>
+          <img id="cat" width = '400' src={`/Frank${frankFace}.PNG`} alt={`${frankFace} expression`}/>
         </div>
 
         <div className="pair">
@@ -514,7 +519,7 @@ export function Play() {
         )}
         
         {/* GO FISH BUTTON */}
-        {gamephase === 'main' && goFishContext === 'player-ask' && current_turn === 'player' && (
+        {gamephase === 'main' && goFishContext === 'player-ask' && current_turn === 'player' &&(
           <button 
             id="go-fish"
             onClick={handleDraw}
@@ -524,7 +529,7 @@ export function Play() {
         )}
 
         {/* Cancel Ask Button */}
-        {current_turn === 'player' && selectedCardForAsk !== null && askedQuestion === 0 &&(
+        {current_turn === 'player' && selectedCardForAsk !== null && askedQuestion === 0 && (
           <button id="cancel-ask" onClick={() => {
             setSelectedCardForAsk(null);
             setMessage("Your turn");
@@ -536,7 +541,7 @@ export function Play() {
         )}
         
         {/* RESPONSE BUTTONS */}
-        {current_turn === 'opponent' && goFishContext === 'opponent-ask' && opponentQuestion && (
+        {current_turn === 'opponent' && goFishContext === 'opponent-ask' && !opponentQuestion && (
           <div className="response-buttons">           
             <button 
               id="go-fish-opponent" 
