@@ -1,5 +1,6 @@
 main {
   display: flex;
+  background-color: rgb(182, 202, 218);
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
@@ -8,69 +9,106 @@ main {
   box-sizing: border-box;
 }
 
+.scores {
+  color: rgb(96, 39, 146);
+  background-color:rgb(217, 199, 223);
+  border: none;
+  border-radius: 14px;
+  padding: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  box-shadow: 0px 0px 5px rgb(36, 7, 67);
+}
+
 .top-menu {
   display: flex;
   justify-content: flex-end;
+  border: none;
+  border-radius: 20px;
   width: 100%;
-}q
-#cat {
-  padding: 0px;
-  margin: 5 px;
 }
 
-.turn {
-  display: flex;
-  justify-content: flex-end;
+#menu-button {
+  background-color: rgba(245, 222, 179, 0.628);
+}
+
+#turn {
+  font-weight: 500 !important;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-size: xx-large;
   width: 100%;
   padding: 0px;
-  border-radius: 0px;
+  border: 0px;
   margin: 0px;
 }
+
 .message_you{
-  color: rgb(58, 138, 86) !important;
+  color: rgb(2, 157, 136) !important;
 }
 
 .message_them {
   color: rgb(184, 19, 63) !important;
 }
 
-.question {
-  text-align: center;
-  margin: 1rem 0;
+#narrator {
+  font-size: larger !important;
+}
+
+#frankswords {
+  font-size: 17px;
+  justify-content: center;
+  padding-top: 10px;
+  font-family:Georgia, 'Times New Roman', Times, serif;
 }
 
 #draw {
-  color:rgb(221, 249, 221);
-  padding: 10px;
-  padding-left: 15px;
-  padding-right: 15px;
-  background: #4b80c1;
-  border: none;
+  color:rgb(203, 229, 203);
+  background: #80ad78;
   border-radius: 8px;
-
+  border: solid;
+  border-width: 2px;
+  border-color: #316929;
+  box-shadow: 0px 0px 10px inset rgb(77, 148, 77);
+  margin: 3px;
+  padding: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  font-size: 30px;
+}
+#cat {
+  margin: 0px;
+  padding: 0px;
 }
 
 #ask {
-  border: solid;
+  border: none;
   border-width: 3px;
-  margin: 20px;
-  padding: 10px;
-  padding-left: 15px;
-  padding-right: 15px;
+  margin: 3px;
+  padding: 5px;
+  padding-left: 20px;
+  padding-right: 20px;
   border-radius: 8px;
-  background-color: rgb(174, 247, 247);
-  color: rgb(4, 65, 4);
+  box-shadow: inset 0px 0px 5px 1px rgb(105, 141, 105);
+  background-color: rgb(181, 203, 203);
+  border-color: rgb(72, 178, 184);
+  color: rgb(16, 91, 85);
+  font-size: 20px;
+  font-weight: 350;
 }
 
 #go-fish {
-  border: dotted;
-  margin: 20px;
+  border: solid;
+  border-width: 2px;
+  box-shadow: 0px 0px 10px inset rgb(238, 107, 100);
+  margin: 10px;
   padding: 10px;
   padding-left: 15px;
   padding-right: 15px;
-  color: rgb(114, 79, 14);
-  background-color: rgb(237, 214, 172);
-  border-radius: 8px;
+  color: rgb(148, 75, 71);
+  background-color: rgb(255, 184, 164);
+  border-color: rgb(204, 111, 106);
+  border-radius: 15px;
+  font-size: 30px;
 }
 
 #cancel-ask {
@@ -79,37 +117,50 @@ main {
 }
 
 #go-fish-opponent {
-  border: dotted;
-  margin: 15px;
+  border: none;
+  border-width: 3px;
+  border-color: rgb(135, 111, 52);
+  box-shadow: inset 0px 0px 2px 3px rgb(212, 175, 11);
+  margin: 10px;
   padding: 10px;
   padding-left: 15px;
   padding-right: 15px;
-  color: rgb(14, 114, 71);
-  background-color: rgb(171, 227, 224);
-  border-radius: 8px;
+  color: rgb(132, 93, 2);
+  background-color:rgb(240, 222, 149);
+  border-radius: 15px;
+  font-size: 30px;
+  font-weight: 650;
 }
 
 
 #end-turn {
   border: none;
-  margin: 20px;
+  margin: 5px;
+  padding: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  border-radius: 8px;
+  background-color: rgb(177, 172, 172);
+  color: rgb(49, 20, 20);
+  box-shadow: inset 0px 0px 2px 3px rgba(98, 97, 91, 0.259);
   padding: 10px;
   padding-left: 15px;
   padding-right: 15px;
-  border-radius: 8px;
-  background-color: rgb(188, 176, 176);
-  color: rgb(50, 5, 5);
-
+  border-radius: 15px;
+  font-size: 20px;
+  font-weight: 650;
 }
 
 .card-selected {
-  background-color: rgb(252, 218, 145) !important;
+  box-shadow: 0px 0px 50px inset rgb(241, 193, 91) !important;
+  background-color: rgb(255, 245, 222) !important;
   color: rgb(197, 119, 3) !important;
   border-color: rgb(182, 127, 9) !important;
 
 }
 
 .card-questioned {
+  box-shadow: 0px 0px 50px inset rgba(241, 194, 91, 0.563) !important;
   background-color: rgb(228, 150, 197) !important;
   color: rgb(103, 24, 24) !important;
   border-color: rgb(84, 7, 55) !important;
@@ -117,22 +168,32 @@ main {
 
 .pair-container {
   display: flex;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   justify-content: space-around;
   align-items: center;
   width: 100%;
-  gap: 1rem;
+
+  gap: 0;
   flex-wrap: nowrap;
   overflow-x: auto;
 }
-
+.dots {
+  color: rgb(154, 74, 95);
+  font-size:xx-large;
+  margin: 0px;
+}
 .pair {
   flex: 1 1 0;
+  white-space: pre-line;
   text-align: center;
   font-size: clamp(0.8rem, 2vw, 1.2rem);
+  margin: 0%;
 }
 
 .picture-box img {
-  max-width: 100%;
+  max-width: 300px;
+  padding:0px;
+  margin: 0px;
   height: auto;
   object-fit: contain;
 }
@@ -166,17 +227,16 @@ main {
 .card {
   display: none;
   font-size: clamp(2rem, 5vw, 6rem);
-  padding: 0;
-  margin: 0;
-  background: none;
-  border: none;
+  margin-top: 0px;
   text-align: center;
-  color: rgb(60, 20, 133);
+  color: rgb(65, 62, 69);
   border-style: solid;
   border-width: 2px;
-  border-color: #333;
+  border-color: #655473;
+  border-radius: 12px;
   padding: 20px;
-  background: rgb(172, 185, 255);
+  background: rgb(177, 186, 232);
+  box-shadow: inset 0px 0px 20px rgb(165, 178, 228);
 }
 
 .card-1 {
@@ -221,7 +281,7 @@ main {
   }
 
   .pair {
-    width: 100%;
+    width: 50%;
   }
 
   header,

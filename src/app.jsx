@@ -10,9 +10,9 @@ import { Menu } from './menu/menu';
 export default function App() {
   return (
     <BrowserRouter>
-    <div className="bg-success-subtle min-vh-100 d-flex flex-column">
+    <div id="nav" className="bg-success-subtle min-vh-100 d-flex flex-column">
       <header className="container-fluid text-success-emphasis">
-        <nav className="navbar fixed-top">
+        <nav className="navbar">
           <h1 className="text-success-emphasis navbar-brand mb-0">
             <b>CatFishGoFish</b>
           </h1>

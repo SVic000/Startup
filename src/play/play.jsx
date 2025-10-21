@@ -58,7 +58,16 @@ export function Play() {
     const [card1,card2] = selection;
     if (card1.value == card2.value) {
       setPlayerPair(prev => prev + 1);
-      setMessage('You caught a fish! Nice Pair');
+      setMessage('You caught a fish! Nice Pair!');
+      if(askedQuestion === 0) {
+      setTimeout(()=> {
+        if(gamephase === 'main') {
+        setMessage("Select a card to ask Frank!")
+        }
+      },2000)
+    } else {
+      setTimeout(`Don't forget to end your turn!`)
+    }
       const newHand = playerHand.filter((_, i) => i !== card1.index && i !== card2.index);
       setPlayerHand(newHand);
       setSelectedCards([]);
@@ -126,11 +135,12 @@ export function Play() {
         setMessage(`Frank doesn't have any ${selectedCardValue}s. Go Fish!`);
         setOpponentWords(`Heh. I dont have any ${selectedCardValue}s`);
         setFrankFace('No')
-        setGoFishContext('player-ask');
+        setTimeout(()=> {
+          setGoFishContext('player-ask');
+        }, 700)
       }
     }, 1000)
   }
-  console.log(opponentHand)
 
   // ------------- OPPONENT MOVES ----------------
   function opponentAsk() {
@@ -146,33 +156,34 @@ export function Play() {
     setOpponentWords(`Do you have any ${randomCard}s?`)
     setFrankFace('Default')
     setAskedQuestion(1);
+    setTimeout(()=> { // let the player breathe
     setGoFishContext('opponent-ask');
+    },1500)
   }
 
   function handleGiveCardToOpponent(cardValue) {
     if (current_turn !== 'opponent' || !opponentQuestion) return;
-
     if (cardValue === opponentQuestion) {
       const cardIndex = playerHand.indexOf(cardValue);
-      setSelectedCardForAsk([{value: cardValue, index: cardIndex}])
+      setSelectedCardForAsk(cardValue)
 
       const newplayerhand = playerHand.filter(card => card != cardValue);
       const newopponenthand = [...opponentHand, cardValue];
+      setOpponentQuestion(null);
 
-      setPlayerHand(newplayerhand);
       setOpponentHand(newopponenthand);
+      setPlayerHand(newplayerhand);
       setMessage(`You gave ${cardValue} to opponent`);
       setOpponentWords(`Thanks for the ${cardValue}.`);
       setFrankFace('Excited');
+      setSelectedCards([]);
       
       setTimeout(() => {
         setCurrentTurn('player');
         setSelectedCardForAsk(null);
-        setSelectedCards([]);
         setAskedQuestion(0);
         setOpponentWords('');
         setFrankFace('Default');
-        setOpponentQuestion(null);
         checkGameEndConditions();
       }, 1500)
     } else {
@@ -181,6 +192,8 @@ export function Play() {
   }
 
   function checkOpponentPairs() {
+    if(gamephase === 'setup' || current_turn === 'player') return;
+
     const cardCounts = {};
     const hand = [...opponentHand];
     hand.forEach(card => {
@@ -277,9 +290,10 @@ export function Play() {
         }, 500);
         return true;
       } else if (current_turn === 'opponent' && opponentHand.length === 0) {
+        setMessage("Franks out of cards! Make any last pairs!")
         setTimeout(() => {
           handleGameEnd();
-        }, 500);
+        }, 10000);
         return true;
       }
     }
@@ -443,8 +457,14 @@ export function Play() {
     }
   }
   )
+
+  console.log(opponentQuestion);
+  console.log(goFishContext);
+  console.log(frankFace);
+
   return (
-    <main className="container-fluid text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3">
+    <main>
+      {gamephase === 'end' && ( 
       <div className="top-menu">
         <button
           id = 'menu-button'
@@ -454,14 +474,13 @@ export function Play() {
         >
           <b>Return to Menu</b>
         </button>
-      </div>
-      
-      <h4 id="turn" className={current_turn === 'player' ? "message_you" : "message_them"}>
-        {current_turn === 'player' ? "Your Turn" : "Opponent's Turn"}
-      </h4>
+      </div>)}
 
-      <div className="text-center my-3" id="question">
-        <b>{message}</b>
+      <div className='text-center'>
+      <p id="turn" className={current_turn === 'player' ? "message_you" : "message_them"}><b>
+        {current_turn === 'player' ? "YOUR TURN" : "OPPONENT'S TURN"}</b>
+      </p>
+      <b id="narrator">{message}</b>
       </div>
 
       <div className='text-center' id='frankswords'> {opponentWords} </div>
@@ -471,7 +490,7 @@ export function Play() {
           <p className="text-center">
             Your Pairs <br />
             {Array.from({length: playerPairs}, (_, i) => (
-              <span key={i}>●<br /></span>
+              <span className="dots" key={i}>●</span>
             ))}
           </p>
         </div>
@@ -482,9 +501,9 @@ export function Play() {
 
         <div className="pair">
           <p className="text-center">
-            Opponent Pairs <br /> 
+            Opponent Pairs < br/> 
             {Array.from({length: opponentPairs}, (_, i) => (
-              <span key={i}>●<br /></span>
+              <span className='dots' key={i}>●</span>
             ))}
           </p>
         </div>
@@ -518,13 +537,13 @@ export function Play() {
           </button>
         )}
         
-        {/* GO FISH BUTTON */}
+        {/* GO FISH PLAYER BUTTON */}
         {gamephase === 'main' && goFishContext === 'player-ask' && current_turn === 'player' &&(
           <button 
             id="go-fish"
             onClick={handleDraw}
           >
-            <b>Go Fish</b>
+            <b>Draw a Fish!</b>
           </button>
         )}
 
@@ -540,8 +559,8 @@ export function Play() {
           </button>
         )}
         
-        {/* RESPONSE BUTTONS */}
-        {current_turn === 'opponent' && goFishContext === 'opponent-ask' && !opponentQuestion && (
+        {/* GO FISH TO OPPONENT BUTTON */}
+        {current_turn === 'opponent' && goFishContext === 'opponent-ask' && frankFace !== 'Excited' &&  !playerHand.includes(opponentQuestion) && (
           <div className="response-buttons">           
             <button 
               id="go-fish-opponent" 
@@ -587,6 +606,7 @@ export function Play() {
                     handleCardClick(card, index);
                   } else if (current_turn === 'opponent' && opponentQuestion) {
                     handleGiveCardToOpponent(card);
+
                   }
                 }}
                 disabled={current_turn === 'opponent' && !opponentQuestion}
@@ -603,10 +623,10 @@ export function Play() {
           <p>Game Over! Final Score: You {playerPairs} - Frank {opponentPairs}</p>
           <button
             type="button"
-            className="btn btn-light btn-outline-primary input-group-text btn-lg"
+            className="scores"
             onClick={() => navigate('/scores')}
           >
-            <b>See Fish Caught</b>
+            <b>See Fish You've Caught!</b>
           </button>
         </div>
       )}

@@ -3,7 +3,9 @@
   flex-direction: column;
   min-width: px;
 }
-
+#nav {
+  background-color: rgb(211, 226, 225) !important;
+}
 menu.navbar-nav {
   list-style: none;
   margin: 0;
