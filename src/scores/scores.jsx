@@ -6,7 +6,7 @@ export function Scores() {
   const navigate = useNavigate();
 
   return (
-    <main className="container-fluid text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3">
+    <main className="container-fluid">
       <div className="d-flex justify-content-center flex-column align-items-center">
         <h3><b>YOU'VE CAUGHT</b></h3>
         <br />

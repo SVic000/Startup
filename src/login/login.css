@@ -10,6 +10,7 @@ header {
 
 main {
   flex: 1 0 auto;
+  background-color: rgb(182, 202, 218) !important;
   display: flex;
   flex-direction: column;
   align-items: center;

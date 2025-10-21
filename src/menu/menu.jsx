@@ -6,7 +6,7 @@ export function Menu() {
   const navigate = useNavigate();
 
   return (
-    <main className="container-fluid text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3">
+    <main className="container-fluid">
       <div className="d-flex justify-content-center flex-column align-items-center">
         <div>
           <h5 className="sticky-line text-center text-primary-emphasis">

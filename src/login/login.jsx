@@ -3,7 +3,7 @@ import './login.css';
 
 export function Login() {
   return (
-    <main className="container-fluid text-center text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3">
+    <main className="container-fluid text-center">
       <div>
         <h1 className="responsive-heading">
           𓆝 𓆟 𓆞 Welcome to <b>CatFishGoFish!</b> 𓆝 𓆟 𓆞
