@@ -12,3 +12,11 @@ generate and renew a certificate for free.
 Caddy uses Let's Encrypt to generate a web certificate every time an HTTPS request is made for a domain name 
 that Caddy doesn't have a web certificate for. I don't really know what Caddy stands for, but it's what you need to adjust in order to make sure 
 that other websites know your website is safe/secure.
+
+Midterm:
+  Link element <link rel="stylesheet" href="styles.css"> applies styles from styles.css to the page, Links to external resource (usually CSS file) to HTML doccuments. 
+
+  Div tag, Division Tag, Block-level container that groups other elements. usually for structure and layout.
+
+  # = id, unique to just one element. . = class can apply to multiple elements. 
+  
