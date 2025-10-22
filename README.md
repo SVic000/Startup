@@ -92,8 +92,8 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **All functionality implemented or mocked out** - I did not complete this part of the deliverable.
-- [ ] **Hooks** - I did not complete this part of the deliverable.
+- [x] **All functionality implemented or mocked out** - I did complete this part of the deliverable. Although on the actual web it seems my timing (setTimers) are off. I also have some bugs that I got tired of trying to fix, so there might be issues with 1) endgame messages and timing, 2) restarting, 3) just weird things in general. The card color wasn't supposed to be white, but something was overwriting it and I couldn't use !important because that was being used on other cases (select and card questioned). I did my best. Please don't look at my code, I'm saying this for your sake. It's hideous.
+- [x] **Hooks** - I did complete this part of the deliverable. So many useStates...
 
 ## 🚀 Service deliverable
 
