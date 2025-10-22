@@ -495,8 +495,6 @@ export function Play() {
     }
   }
   )
-  console.log(gamephase);
-  console.log(opponentHand);
 
   return (
     <main>

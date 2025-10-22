@@ -24,8 +24,6 @@ export function updatePlayerScore(pointsToAdd) {
         scores[currentPlayer] = (scores[currentPlayer] || 0) + pointsToAdd
 
         localStorage.setItem('goFishScores', JSON.stringify(scores));
-
-        console.log(`updated score: ${scores[currentPlayer]} points`)
     } catch(error) {
         console.error('Error updating score in localstorage:', error);
     }
