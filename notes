@@ -12,3 +12,104 @@ generate and renew a certificate for free.
 Caddy uses Let's Encrypt to generate a web certificate every time an HTTPS request is made for a domain name 
 that Caddy doesn't have a web certificate for. I don't really know what Caddy stands for, but it's what you need to adjust in order to make sure 
 that other websites know your website is safe/secure.
+
+Midterm:
+  Link element <link rel="stylesheet" href="styles.css"> applies styles from styles.css to the page, Links to external resource (usually CSS file) to HTML doccuments. 
+
+  Div tag, Division Tag, Block-level container that groups other elements. usually for structure and layout.
+
+  # = id, unique to just one element. . = class can apply to multiple elements. 
+ CSS box model 
+Margin
+border
+padding
+content
+
+If container uses display flex, will be row by default. flex-direction: column specifies it into columns instead
+Arrow Functions: compact functoin syntax. (a,b)=> a+b means a function with parameters a and b, returns a+b
+
+map() function in javascript arrays applies a function to every element in the array and returns a new array without mutating the original.
+get element by id, grabs the html element within the DOM. addEventListener adds something to pay attention to an action that happens to that element.
+
+document.querySelector('#title') selects the first element that matches the CSS selector #title 
+(elemequerySelector accepts any CSS selector (classes, attributes, pseudos).
+
+The DOM represents the HTML document as a tree of objects. You can use JavaScript to access and modify
+DOM elements. Each HTML element is a node in the DOM.
+
+HTMl span element has a default CSS display property of inline
+
+div { background-color: red; }
+
+To display an image with a hyperlink in HTML: -----
+Wrap the &lt;img&gt; element with an &lt;a&gt; tag. Ensure the image file is in the correct folder (public or
+images/) and the src path points to it.
+Example:
+&lt;a href="https://example.com"&gt;
+ &lt;img src="images/logo.png" alt="Logo"&gt;
+&lt;/a&gt;
+Folder scheme example:
+project/
+ index.html
+ images/
+ logo.png
+ css/
+ styles.css
+If using a framework, the image may need to be in a 'public' or 'static' folder so it is served directly.
+
+Given the following HTML, what CSS would you use to set the text "trouble" to green and leave
+the "double" text unaffected?
+Given <p><span class="trouble">trouble</span> double</p>, use .trouble { color: green; }
+
+What will the following code output when executed using a for loop and console.log?
+for (let i = 0; i < 3; i++) { console.log(i); }
+This initializes i=0, checks i<3 each loop, runs body and increments i++ after each iteration. 
+
+Getting an element and changing the style
+Option 1 (direct):
+document.getElementById('byu').style.color = 'green';
+Option 2 (variable):
+const byu = document.getElementById('byu');
+byu.style.color = 'green';
+Explanation: getElementById returns the DOM element. Assigning to variable avoids querying repeatedly
+
+Paragraph: <p>, Ordered list: <ol>, Unordered list: <ul>, h2: <h2>, h1: <h1>, h3: <h3>
+
+Declaring a document to know it's using html = <!DOCTYPE html>
+
+What is valid javascript syntax for if, else, for, while, switch statements?
+if (x > 5) { ... } else { ... } for (...) { ... } while (...) { ... } switch (x) { case 1: ...; break; default: ... }
+
+What is the correct syntax for creating a javascript object?
+const person = { name: "John", age: 30 };
+Is it possible to add new properties to javascript objects?
+Yes. Example: person.city = "Provo";
+
+including javascript into html <script src="script.js"></script> uses script tag.  (scr links to another file that has the functions)
+
+JSON (JavaScript Object Notation) is a text-based format for structured data using key-value pairs. Example: {
+"name": "John", "age": 25 }
+
+Console commands!
+chmod - change permissions, pwd - print working directory, cd - change directory, ls - list files, vim/nano - text
+editors, mkdir - make directory, mv - move/rename, rm - remove, man - manual, ssh - remote shell, ps -
+processes, wget - download files, sudo - run as admin -la (after ls) lists all files (including hidden) in long format
+
+TLD: .click, root domain: bozo.click, subdomain: fruit.bozo.click (and banana.fruit.bozo.click is a nested
+subdomain)
+
+A DNS A record points to an IP address; it should not point to another A record
+
+Port 443, 80, 22 is reserved for which protocol?
+443 -> HTTPS, 80 -> HTTP, 22 -> SSH
+
+promise behavior. Examples:
+1) Promise.resolve('Done').then(console.log) -> 'Done'
+2) Promise.reject('Error').catch(console.error) -> 'Error'
+3) new Promise(res => setTimeout(() => res('Hi'),1000)).then(console.log) -> 'Hi' after 1s
+4) Async function returns value -> printed when awaited or .then
+5) Promise chain: Promise.resolve(2).then(x=>x*2).then(x=>x+1).then(console.log) -> 5
+6) Reject handled -> shows error via catch
+
+
+
