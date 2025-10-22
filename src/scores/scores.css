@@ -30,7 +30,7 @@ footer {
   font-size: 5dvb;
   color:rgb(21, 8, 105); 
 }
-p span{
+p#score span{
   color: rgb(90, 79, 241);
   font-size: 9dvb;
   background-color: rgba(240, 248, 255, 0.813); 

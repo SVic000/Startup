@@ -198,11 +198,14 @@ main {
   flex-wrap: nowrap;
   overflow-x: auto;
 }
+
 .dots {
   color: rgb(40, 43, 109);
   font-size:xx-large;
   margin: 0px;
+  background-color: none !important;
 }
+
 .pair {
   flex: 1 1 0;
   white-space: pre-line;
