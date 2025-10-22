@@ -33,6 +33,27 @@ export function Play() {
   const [opponentWords, setOpponentWords] = useState(''); // hard coded opponent words
 
   // ------ Player Draw Function --------
+  function handleRestart() {
+    setPlayerHand([]);
+    setOpponentHand([]);
+    setAvailDeck([1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9]);
+    setCurrentTurn(null);
+    setStartingPlayer(Math.floor(Math.random() * 2));
+    setFrankFace('Default')
+    setPlayerPair(0);
+    setOpponentPair(0);
+    setGamePhase('setup');
+    setAskedQuestion(0);
+    setDrawCount(0);
+    setMessage('');
+    setOpponentWords('');
+    setGoFishContext(null);
+    setOpponentQuestion(null);
+    setSelectedCardForAsk(null)
+    setSelectedCards([]);
+    setHasStarted(false);
+  }
+
   function handleDraw() {
     const {newDeck, newHand } = draw(availDeck, playerHand);
     setAvailDeck(newDeck);
@@ -62,11 +83,20 @@ export function Play() {
       if(askedQuestion === 0) {
       setTimeout(()=> {
         if(gamephase === 'main') {
-        setMessage("Select a card to ask Frank!")
+          setTimeout(()=>{
+            setMessage("Select a card to ask Frank!")
+          },1000)
         }
-      },2000)
+      },1000)
     } else {
-      setTimeout(`Don't forget to end your turn!`)
+      setTimeout(()=> {
+        if(gamephase === 'main') {
+          setTimeout(()=>{
+            if(gamephase === 'main') {
+            setMessage(`Don't forget to end your turn!`)
+            }
+          }, 1000); 
+        }},1000);
     }
       const newHand = playerHand.filter((_, i) => i !== card1.index && i !== card2.index);
       setPlayerHand(newHand);
@@ -241,7 +271,7 @@ export function Play() {
       setAskedQuestion(0);
       setMessage('Select a card to ask Frank!');
       setOpponentWords('');
-    }, 1500);
+    }, 1200);
   }
 
   // Update refs
@@ -424,6 +454,7 @@ export function Play() {
           setCurrentTurn('player');
           setAskedQuestion(0);
           setMessage('Your turn! Frank has no cards left.');
+          setFrankFace('Default');
         }, 1000);
       }
     }
@@ -480,7 +511,7 @@ export function Play() {
       <p id="turn" className={current_turn === 'player' ? "message_you" : "message_them"}><b>
         {current_turn === 'player' ? "YOUR TURN" : "OPPONENT'S TURN"}</b>
       </p>
-      <b id="narrator">{message}</b>
+      <b class="narrator">{message}</b>
       </div>
 
       <div className='text-center' id='frankswords'> {opponentWords} </div>
@@ -619,8 +650,13 @@ export function Play() {
       </div>
       
       {gamephase === 'end' && (
-        <div className="text-center mt-4">
-          <p>Game Over! Final Score: You {playerPairs} - Frank {opponentPairs}</p>
+        <div id='end-buttons'>
+          <p className = "narrator" style = {{ fontFamily: 'Trebuchet MS'}}> Game Over! Final Score: You {playerPairs} - Frank {opponentPairs}</p>
+        <button id="Restart" onClick={() => {
+          handleRestart();
+          }}>
+            <b>Play Again?</b>
+          </button>
           <button
             type="button"
             className="scores"
