@@ -4,26 +4,29 @@ import './scores.css';
 
 export function Scores() {
   const navigate = useNavigate();
+  const [score, setScore] = React.useState([]);
+
+  React.useEffect(() => {
+    const savedScores = JSON.parse(localStorage.getItem('goFishScores')) || {};
+    setScore(savedScores);
+  }, []);
+
 
   return (
     <main className="container-fluid">
-      <div className="d-flex justify-content-center flex-column align-items-center">
-        <h3><b>YOU'VE CAUGHT</b></h3>
-        <br />
-        <a
-          className="btn btn-primary disabled placeholder col-4"
-          style={{ width: '100px', height: '50px' }}
-          aria-disabled="true"
-        ></a>
-        <br />
-        <h3>𓆞 <b>FISH</b> 𓆝</h3>
-        <p><b>Congratulations!</b></p>
+      <br/>
+      <div id="hold" className="d-flex justify-content-center flex-column align-items-center">
+        <p className='words'><b>YOU'VE CAUGHT</b></p>
+        <p className='words'>𓆞 <span id='score'><b>{score.player}</b></span> 𓆝</p>
+        <p className='words'><b>FISH!</b></p>
+        <p className='words'><b>Congratulations!</b></p>
       </div>
 
-      <div className="d-flex justify-content-center flex-column align-items-center">
+      <div>
         <button
           type="button"
-          className="btn btn-light btn-outline-primary input-group-text"
+          id='menu'
+          className="btn btn-outline-primary input-group-text"
           onClick={() => navigate('/menu')}
         >
           <b>Return to Menu</b>

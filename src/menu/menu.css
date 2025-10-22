@@ -6,6 +6,42 @@ main {
   padding: 0.5rem 1rem;
 }
 
+p {
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-weight: 500;
+  font-size: large;
+}
+
+#play {
+  background-color: rgba(250, 235, 215, 0.67);
+  font-weight: 600;
+  font-size: 10vw;
+  padding: 2vw 5vw;
+  border-radius: 70px;
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  margin: 1.5%;
+}
+
+#play:hover {
+  color: rgb(75, 54, 12);
+  box-shadow: inset 0px 0px 50px 6px rgba(139, 156, 82, 0.595);
+}
+
+#scores {
+  border:none;
+  color:rgb(4, 24, 24);
+  border-radius: 20%;
+  background-color: rgb(95, 158, 160, 0.401);
+  margin: 0px;
+  font-size: 2.5dvw;
+}
+
+#scores:hover {
+  border:none;
+  box-shadow: inset 0px 0px 40px 5px rgb(82, 155, 156);
+  background-color: beige;
+}
+
 @media (max-height: 475px), (max-width: 800px) {
   .responsive-heading {
     font-size: 1.5rem;

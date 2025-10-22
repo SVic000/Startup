@@ -21,6 +21,34 @@ footer {
   flex: 0 30px;
 }
 
+#hold {
+  background-color: rgba(240, 248, 255, 0); 
+  padding: 3%;
+  border-radius: 100%;
+}
+.words {
+  font-size: 5dvb;
+  color:rgb(21, 8, 105); 
+}
+p span{
+  color: rgb(90, 79, 241);
+  font-size: 9dvb;
+  background-color: rgba(240, 248, 255, 0.813); 
+  padding: 5px;
+  padding-right: 25px;
+  padding-left: 25px;
+  border-radius: 80%;
+}
+#menu {
+  background-color: rgba(233, 248, 255, 0.545);
+  margin: 0px;
+  padding: 10%;
+  font-size: large;
+}
+#menu:hover {
+  background-color: rgba(13, 109, 253, 0.839);
+}
+
 .narrow-content {
   max-width: 600px;
   width: 100%;

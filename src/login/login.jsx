@@ -1,38 +1,29 @@
 import React from 'react';
+import { Unauthenticated } from './unauthenticated';
+import { Authenticated } from './authenticated';
+import { AuthState } from './authState';
 import './login.css';
 
-export function Login() {
+export function Login( {userName, authState, onAuthChange }) {
   return (
     <main className="container-fluid text-center">
-      <div>
-        <h1 className="responsive-heading">
+          <div>
+             <h1 className="responsive-heading">
           𓆝 𓆟 𓆞 Welcome to <b>CatFishGoFish!</b> 𓆝 𓆟 𓆞
         </h1>
-        <br />
-        <form method="get" action="/menu">
-          <div className="narrow-content input-group mb-3">
-            <span className="btn-light btn-outline-primary input-group-text text-primary-emphasis" type="text">
-              <b>Login</b>
-            </span>
-            <input className="form-control" type="text" placeholder="your@email.com" />
+            {authState === AuthState.Authenticated && (
+              <Authenticated userName={userName} onLogout={() => onAuthChange(userName, AuthState.Unauthenticated)} />
+            )}
+            {authState === AuthState.Unauthenticated && (
+              <Unauthenticated
+                userName={userName}
+                onLogin={(loginUserName) => {
+                  onAuthChange(loginUserName, AuthState.Authenticated);
+                }}
+              />
+            )}
           </div>
-
-          <div className="narrow-content input-group mb-3">
-            <span className="btn-light btn-outline-primary input-group-text text-primary-emphasis" type="password">
-              <b>Password</b>
-            </span>
-            <input className="form-control" type="password" placeholder="password" />
-          </div>
-
-          <button type="submit" className="btn btn-light btn-outline-primary input-group-text">
-            <b>Login</b>
-          </button>
-          {' '}
-          <button type="submit" className="btn btn-light btn-outline-secondary input-group-text">
-            <b>Create</b>
-          </button>
-        </form>
-      </div>
     </main>
+
   );
 }

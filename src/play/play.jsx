@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { draw } from './PlayFunct';
+import { draw, updatePlayerScore } from './PlayFunct';
 import './play.css';
 
 export function Play() {
@@ -92,11 +92,15 @@ export function Play() {
       setTimeout(()=> {
         if(gamephase === 'main') {
           setTimeout(()=>{
-            if(gamephase === 'main') {
-            setMessage(`Don't forget to end your turn!`)
+            if(gamephase === 'main' && current_turn === 'player') {
+              setTimeout(()=> {
+              if(current_turn === 'player') {
+                setMessage(`Don't forget to end your turn!`);
+              }
+            }, 100)
             }
-          }, 1000); 
-        }},1000);
+          }, 500); 
+        }},500);
     }
       const newHand = playerHand.filter((_, i) => i !== card1.index && i !== card2.index);
       setPlayerHand(newHand);
@@ -340,12 +344,15 @@ export function Play() {
       if (playerPairs > opponentPairs) {
         setMessage("You won! Greatest fisher here!");
         setOpponentWords("Oof, you were a strong opponent! Good game!");
+        updatePlayerScore(.5);
       } else if (opponentPairs > playerPairs) {
         setMessage("Frank won! An amazing battle!");
         setOpponentWords("Heh, you were a tough foe. Good game!");
+        updatePlayerScore(0);
       } else {
         setMessage("It's a tie! What an intense match!");
         setOpponentWords("A tie! We're equally matched! Good game!");
+        updatePlayerScore(0);
       }
     }, 100);
   }
@@ -488,10 +495,8 @@ export function Play() {
     }
   }
   )
-
-  console.log(opponentQuestion);
-  console.log(goFishContext);
-  console.log(frankFace);
+  console.log(gamephase);
+  console.log(opponentHand);
 
   return (
     <main>
@@ -511,7 +516,7 @@ export function Play() {
       <p id="turn" className={current_turn === 'player' ? "message_you" : "message_them"}><b>
         {current_turn === 'player' ? "YOUR TURN" : "OPPONENT'S TURN"}</b>
       </p>
-      <b class="narrator">{message}</b>
+      <b className="narrator">{message}</b>
       </div>
 
       <div className='text-center' id='frankswords'> {opponentWords} </div>
@@ -558,7 +563,7 @@ export function Play() {
         )}
         
         {/* DRAW BUTTON */}
-        {(gamephase === 'setup' || (playerHand.length === 0 && askedQuestion === 0)) && current_turn === 'player' && (
+        {(gamephase === 'setup' || (playerHand.length === 0 && askedQuestion === 0 && gamephase !== 'end')) && current_turn === 'player' && (
           <button 
             id="draw"
             onClick={handleDraw}
@@ -618,7 +623,7 @@ export function Play() {
         )}
       </div>
 
-      <div className="card-toggle-wrapper">
+      <div>
         <div className="card-container">
           {playerHand.map((card, index) => {
             const isSelected = selectedCards.some(selected => selected.index === index);

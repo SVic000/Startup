@@ -199,7 +199,7 @@ main {
   overflow-x: auto;
 }
 .dots {
-  color: rgb(154, 74, 95);
+  color: rgb(40, 43, 109);
   font-size:xx-large;
   margin: 0px;
 }
@@ -217,12 +217,6 @@ main {
   margin: 0px;
   height: auto;
   object-fit: contain;
-}
-
-.hidden-checkbox {
-  position: absolute;
-  left: -9999px;
-  opacity: 0;
 }
 
 .toggle-button {
@@ -246,18 +240,17 @@ main {
 }
 
 .card {
-  display: none;
   font-size: clamp(2rem, 5vw, 6rem);
   margin-top: 0px;
   text-align: center;
-  color: rgb(65, 62, 69);
+  color: rgb(97, 79, 121);
   border-style: solid;
   border-width: 2px;
   border-color: #655473;
   border-radius: 12px;
   padding: 20px;
   background: rgb(177, 186, 232);
-  box-shadow: inset 0px 0px 20px rgb(165, 178, 228);
+  box-shadow: inset 0px 0px 20px rgba(167, 170, 184, 0.464);
 }
 
 .card-1 {

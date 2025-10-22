@@ -16,4 +16,17 @@ export function draw(deck, hand) {
     return { newDeck, newHand };
 }
 
-// need function to handle 
+export function updatePlayerScore(pointsToAdd) {
+    try {
+        const scores = JSON.parse(localStorage.getItem('goFishScores')) || {};
+
+        const currentPlayer = 'player';
+        scores[currentPlayer] = (scores[currentPlayer] || 0) + pointsToAdd
+
+        localStorage.setItem('goFishScores', JSON.stringify(scores));
+
+        console.log(`updated score: ${scores[currentPlayer]} points`)
+    } catch(error) {
+        console.error('Error updating score in localstorage:', error);
+    }
+}
