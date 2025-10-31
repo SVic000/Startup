@@ -1,24 +1,13 @@
 .body {
   display: flex;
   flex-direction: column;
-  min-width: px;
-}
-
-header {
-  flex: 0 80px;
 }
 
 main {
-  flex: 1 calc(100vh - 110px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-around;
-   background-color: rgb(182, 202, 218) !important;
-}
-
-footer {
-  flex: 0 30px;
 }
 
 #hold {
@@ -28,7 +17,6 @@ footer {
 }
 .words {
   font-size: 5dvb;
-  color:rgb(21, 8, 105); 
 }
 p#score span{
   color: rgb(90, 79, 241);
@@ -39,6 +27,8 @@ p#score span{
   padding-left: 25px;
   border-radius: 80%;
 }
+
+/* menu button */
 #menu {
   background-color: rgba(233, 248, 255, 0.545);
   margin: 0px;
@@ -54,23 +44,6 @@ p#score span{
   width: 100%;
   margin: 0 auto;
 
-}
-
-menu {
-  flex: 1;
-  display: flex;
-  /*  overwrite Bootstrap so the menu does not wrap */
-  flex-direction: row !important;
-  list-style: none;
-}
-
-.navbar-brand {
-  padding-left: 0.3em;
-  border-bottom: solid rgb(182, 182, 182) thin;
-}
-
-menu .nav-item {
-  padding: 0 0.3em;
 }
 
 footer a {

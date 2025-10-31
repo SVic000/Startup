@@ -8,9 +8,18 @@ header {
   flex: 0 0 80px;
 }
 
+h1 span {
+  color: rgb(123, 167, 205);
+}
+h1 span b {
+  color: rgb(223, 212, 201);
+}
+span#name {
+  color: rgb(123, 167, 205);
+}
+
 main {
   flex: 1 0 auto;
-  background-color: rgb(182, 202, 218) !important;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -25,24 +34,6 @@ footer {
   max-width: 600px;
   width: 100%;
   margin: 0 auto;
-}
-
-menu {
-  flex: 1;
-  display: flex;
-  flex-direction: row !important;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.navbar-brand {
-  padding-left: 0.3em;
-  border-bottom: solid rgb(182, 182, 182) thin;
-}
-
-menu .nav-item {
-  padding: 0 0.3em;
 }
 
 footer a {

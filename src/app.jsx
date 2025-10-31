@@ -15,28 +15,28 @@ function App() {
 
   return (
     <BrowserRouter>
-    <div id="nav" className="bg-success-subtle min-vh-100 d-flex flex-column">
-      <header className="container-fluid text-success-emphasis">
+    <div id="nav" className="min-vh-100 d-flex flex-column">
+      <header className="container-fluid">
         <nav className="navbar">
-          <h1 className="text-success-emphasis navbar-brand mb-0">
+          <h1 className="navbar-brand">
             <b>CatFishGoFish</b>
           </h1>
-          <menu className="navbar-nav d-flex flex-row ms-auto mb-0">
-            <li className="nav-item">
-              <NavLink className="nav-link" to="">
+          <menu className="navbar-nav d-flex flex-row ms-auto mb-0"> 
+            <li>
+              <NavLink className = "link" to="">
                 Login
               </NavLink>
             </li>
             {authState === AuthState.Authenticated && (
-            <li className="nav-item">
-              <NavLink className="nav-link" to="menu">
+            <li>
+              <NavLink className = "link" to="menu">
                 Menu
               </NavLink>
             </li>
             )}
             {authState === AuthState.Authenticated && (
-            <li className="nav-item">
-                <NavLink className="nav-link" to="scores">
+            <li>
+                <NavLink className = "link" to="scores">
                   Scores
                 </NavLink>
             </li>
@@ -59,7 +59,7 @@ function App() {
         <Route path='*' element={<NotFound />} />
       </Routes>
 
-      <footer className="text-succsess">
+      <footer>
         <div className="container-fluid">
           <span className="text-reset">Author Name</span>
           <a className="text-reset" href="https://github.com/SVic000/Startup/">
@@ -72,7 +72,7 @@ function App() {
   );
   
 function NotFound() {
-  return <main className="container-fluid bg-secondary text-center">404: Return to sender. Address unknown.</main>;
+  return <main className="container-fluid text-center">404: Return to sender. Address unknown.</main>;
 }
 }
 

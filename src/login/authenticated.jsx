@@ -13,7 +13,7 @@ export function Authenticated(props) {
 
   return (
     <div>
-      <div className='playerName'>Ready to Fish {props.userName}?</div>
+      <div className='playerName'>Ready to fish <span id="name"> {props.userName}</span>?</div>
       <br/>
       <Button variant='primary' onClick={() => navigate('/menu')}>
         Menu

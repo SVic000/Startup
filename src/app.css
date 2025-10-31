@@ -1,14 +1,53 @@
 .body {
   display: flex;
   flex-direction: column;
-  min-width: px;
 }
 
 #nav {
-  background-color: rgb(211, 226, 225) !important;
+  background-color: #212f40;
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 2.5rem;
 }
-menu.navbar-nav {
+
+main {
+  background-color: #5c6c84;
+  color: #9db7c4;
+}
+
+.navbar-brand {
+  display: flex;
+  color: rgb(101, 142, 177);
+  border-bottom: solid#9db7c4 thin;
+  padding: 1%;
+}
+.navbar-brand:hover {
+  color: rgb(101, 142, 177);
+}
+.navbar-nav {
+  display: flex;
+  flex-direction: row;
   list-style: none;
-  margin: 0;
-  padding: 0;
+  gap: 1rem;
+}
+
+.navbar {
+  justify-content: flex-start;
+  flex-direction: row;
+}
+
+.link {
+  color: rgb(101, 142, 177);
+  text-decoration: none;
+}
+.link:hover {
+  color:rgb(155, 187, 215);
+}
+.link.active {
+  color:#c2d7e1;
+}
+
+footer {
+  color:rgb(101, 142, 177);
+  padding: .5%;
 }

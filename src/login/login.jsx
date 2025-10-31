@@ -9,7 +9,7 @@ export function Login( {userName, authState, onAuthChange }) {
     <main className="container-fluid text-center">
           <div>
              <h1 className="responsive-heading">
-          𓆝 𓆟 𓆞 Welcome to <b>CatFishGoFish!</b> 𓆝 𓆟 𓆞
+          𓆝 𓆟 𓆞 <span> Welcome to <b>CatFishGoFish!</b> </span> 𓆝 𓆟 𓆞
         </h1>
             {authState === AuthState.Authenticated && (
               <Authenticated userName={userName} onLogout={() => onAuthChange(userName, AuthState.Unauthenticated)} />
