@@ -14,6 +14,7 @@ app.use(`/api`, apiRouter);
 
 app.use(express.json());
 
+app.use(express.static('public'));
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
@@ -30,6 +31,17 @@ apiRouter.post('/auth/create', async (req, res) => {
     res.send({ email: user.email });
   }
 });
+
+// Middleware to verify that the user is authorized to call an endpoint
+const verifyAuth = async (req, res, next) => {
+  const user = await findUser('token', req.cookies[authCookieName]);
+  if (user) {
+    next();
+  } else {
+    res.status(401).send({ msg: 'Unauthorized' });
+  }
+};
+
 
 // GetAuth login an existing user
 apiRouter.post('/auth/login', async (req, res) => {
@@ -54,16 +66,6 @@ apiRouter.delete('/auth/logout', async (req, res) => {
   res.clearCookie(authCookieName);
   res.status(204).end();
 });
-
-// Middleware to verify that the user is authorized to call an endpoint
-const verifyAuth = async (req, res, next) => {
-  const user = await findUser('token', req.cookies[authCookieName]);
-  if (user) {
-    next();
-  } else {
-    res.status(401).send({ msg: 'Unauthorized' });
-  }
-};
 
 // GetScores
 apiRouter.get('/scores', verifyAuth, (_req, res) => {
@@ -135,16 +137,6 @@ function setAuthCookie(res, authToken) {
     sameSite: 'strict',
   });
 }
-
-// Middleware to verify that the user is authorized to call an endpoint
-const verifyAuth = async (req, res, next) => {
-  const user = await findUser('token', req.cookies[authCookieName]);
-  if (user) {
-    next();
-  } else {
-    res.status(401).send({ msg: 'Unauthorized' });
-  }
-};
 
 // GetScores
 apiRouter.get('/scores', verifyAuth, (_req, res) => {
