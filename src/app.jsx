@@ -21,7 +21,7 @@ function App() {
           <h1 className="navbar-brand">
             <b>CatFishGoFish</b>
           </h1>
-          <menu className="navbar-nav d-flex flex-row ms-auto mb-0"> 
+          <menu className="navbar-nav d-flex flex-row mb-0"> 
             <li>
               <NavLink className = "link" to="">
                 Login

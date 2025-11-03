@@ -15,10 +15,10 @@ export function Authenticated(props) {
     <div>
       <div className='playerName'>Ready to fish <span id="name"> {props.userName}</span>?</div>
       <br/>
-      <Button variant='primary' onClick={() => navigate('/menu')}>
+      <Button className="LogI-Menu" onClick={() => navigate('/menu')}>
         Menu
       </Button>
-      <Button variant='secondary' onClick={() => logout()}>
+      <Button className="Create-LogO" onClick={() => logout()}>
         Logout
       </Button>
     </div>

@@ -8,11 +8,29 @@ header {
   flex: 0 0 80px;
 }
 
+.LogI-Menu {
+  background-color: rgb(123, 167, 205) !important;
+  border-color: rgb(67, 120, 167) !important;
+  margin: .5 dvb;
+}
+.LogI-Menu:hover {
+  background-color: rgb(117, 152, 183)!important;
+}
+.Create-LogO {
+  color: rgb(110, 120, 130) !important;
+  margin: .5dvb;
+  background-color: rgb(223, 212, 201) !important;
+  border-color: rgb(205, 178, 151) !important;
+}
+.Create-LogO:hover {
+  background-color:rgb(199, 181, 163) !important;
+}
+
 h1 span {
   color: rgb(123, 167, 205);
 }
 h1 span b {
-  color: rgb(223, 212, 201);
+  color: #e5963c;
 }
 span#name {
   color: rgb(123, 167, 205);

@@ -14,14 +14,14 @@ export function Menu(props) {
   return (
     <main className="container-fluid">
       <div className="Main-container d-flex justify-content-center flex-column align-items-center">
-        <div>
-          <h5 className="CatFact sticky-line text-center text-primary-emphasis">
+        <div id="catfact">
+          <h5 className="sticky-line text-centers">
            {catFact}
           </h5>
         </div>
 
         <div className="w-100 text-center sticky-line">
-          <p>Find a fishing opponent! 🪝</p>
+          <p>Find an opponent!</p>
 
           <button
             id="play"
@@ -32,14 +32,16 @@ export function Menu(props) {
           </button>
 
           <br />
-          <p>See your winnings</p>
+          <br />
+          <br />
+          <p>⤹ See how many times you've won! ⤵</p>
 
           <button
           id='scores'
             className="btn input-group-text"
             onClick={() => navigate('/scores')}
           >
-            <b>𓆝 ⋆.</b>
+            <b>𓆝  ⋆.</b>
           </button>
         </div>
       </div>

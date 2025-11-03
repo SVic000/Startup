@@ -17,9 +17,9 @@ export function Scores() {
       <br/>
       <div id="hold" className="d-flex justify-content-center flex-column align-items-center">
         <p className='words'><b>YOU'VE CAUGHT</b></p>
-        <p className='words'>𓆞 <span id='score'><b>{score.player}</b></span> 𓆝</p>
+        <p className='words'>𓆞 <span id='number'><b>{score.player}</b></span> 𓆝</p>
         <p className='words'><b>FISH!</b></p>
-        <p className='words'><b>Congratulations!</b></p>
+        <p className='words' id="congrats"><b>Congratulations!</b></p>
       </div>
 
       <div>
