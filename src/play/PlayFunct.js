@@ -16,15 +16,22 @@ export function draw(deck, hand) {
     return { newDeck, newHand };
 }
 
-export function updatePlayerScore(pointsToAdd) {
+export async function updatePlayerScore(pointsToAdd) {
     try {
-        const scores = JSON.parse(localStorage.getItem('goFishScores')) || {};
-
-        const currentPlayer = 'player';
-        scores[currentPlayer] = (scores[currentPlayer] || 0) + pointsToAdd
-
-        localStorage.setItem('goFishScores', JSON.stringify(scores));
+        let newScore = pointsToAdd
+        await fetch('/api/scores')
+        .then((response)=> response.json())
+        .then((score)=> {
+            console.log(score.playerScore);
+            newScore+= score.playerScore || 0
+        })
+// make the api call here to change the playre score!
+        await fetch('/api/score', {
+            method: 'POST',
+            headers: {'content-type': 'application/json'},
+            body: JSON.stringify({score : newScore})
+        })
     } catch(error) {
-        console.error('Error updating score in localstorage:', error);
+        console.error('Error updating score in Service:', error);
     }
 }

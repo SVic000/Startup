@@ -7,8 +7,11 @@ export function Scores() {
   const [score, setScore] = React.useState([]);
 
   React.useEffect(() => {
-    const savedScores = JSON.parse(localStorage.getItem('goFishScores')) || {};
-    setScore(savedScores);
+    fetch('/api/scores')
+    .then((response)=> response.json())
+    .then((scores)=> {
+      setScore(scores.playerScore);
+    })
   }, []);
 
 
@@ -17,7 +20,7 @@ export function Scores() {
       <br/>
       <div id="hold" className="d-flex justify-content-center flex-column align-items-center">
         <p className='words'><b>YOU'VE CAUGHT</b></p>
-        <p className='words'>𓆞 <span id='number'><b>{score.player}</b></span> 𓆝</p>
+        <p className='words'>𓆞 <span id='number'><b>{score}</b></span> 𓆝</p>
         <p className='words'><b>FISH!</b></p>
         <p className='words' id="congrats"><b>Congratulations!</b></p>
       </div>

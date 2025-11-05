@@ -7,11 +7,18 @@ const uuid = require('uuid');
 const authCookieName = 'token';
 
 let users = [];
-let scores = [];
+let scores = {};
 let availDeck = [1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9];
 let currentGames = {};
 
 const port = process.argv.length > 2 ? process.argv[2] : 3000;
+
+app.use((req,res,next)=> {
+  console.log(req.url)
+  console.log(req.params)
+  console.log(req.body)
+  next()
+})
 
 // JSON body parsing using built-in middleware
 app.use(express.json());
@@ -37,6 +44,10 @@ apiRouter.post('/auth/create', async (req, res) => {
     res.send({ email: user.email });
   }
 });
+
+apiRouter.get('/', async(req,res) => {
+  res.send('hello');
+})
 
 // GetAuth login an existing user
 apiRouter.post('/auth/login', async (req, res) => {
@@ -73,13 +84,21 @@ const verifyAuth = async (req, res, next) => {
 };
 
 // GetScores
-apiRouter.get('/scores', verifyAuth, (_req, res) => {
-  res.send(scores);
+apiRouter.get('/scores', verifyAuth, async (_req, res) => {
+  console.log(scores);
+  const user = await findUser('token', _req.cookies[authCookieName]);
+
+  res.send({playerScore : scores[user.email]});
+  console.log(scores);
 });
 
 // SubmitScore
-apiRouter.post('/score', verifyAuth, (req, res) => {
-  scores = updateScores(req.body);
+apiRouter.post('/score', verifyAuth, async (req, res) => {
+  console.log(req.body)
+  const user = await findUser('token', req.cookies[authCookieName]);
+
+  scores = updateScores(user.email, req.body.score);
+  console.log(scores)
   res.send(scores);
 });
 
@@ -145,9 +164,11 @@ function setAuthCookie(res, authToken) {
 }
 
 // Helper function for scores
-function updateScores(newScore) {
-  scores.push(newScore);
+function updateScores(user, newScore) {
+  scores[user] = newScore
   return scores;
 }
 
-app.listen(port)
+app.listen(port, () => {
+  console.log(`Listening on port ${port}`);
+});

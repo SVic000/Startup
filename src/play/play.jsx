@@ -21,7 +21,7 @@ export function Play() {
   const [opponentQuestion, setOpponentQuestion] = useState(null); // what Franks asking player
   const [goFishContext, setGoFishContext] = useState(null); // Whether the go fish is for you or them
 
-  const [availDeck, setAvailDeck] = useState([1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9]);
+  const [availDeck, setAvailDeck] = useState([1,1,2,2,3,3,4,4]);
   const [playerHand, setPlayerHand] = useState([]);
   const [opponentHand, setOpponentHand] = useState([]);
   const opponentHandRef = useRef([]);
@@ -37,7 +37,7 @@ export function Play() {
   function handleRestart() {
     setPlayerHand([]);
     setOpponentHand([]);
-    setAvailDeck([1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9]);
+    setAvailDeck([1,1,2,2]);
     setCurrentTurn(null);
     setStartingPlayer(Math.floor(Math.random() * 2));
     setFrankFace('Default')
