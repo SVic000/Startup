@@ -9,17 +9,15 @@ const authCookieName = 'token';
 
 let users = [];
 let scores = [];
+let availDeck = [1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9];
+let currentGames = {};
 
 let apiRouter = express.Router();
 app.use(`/api`, apiRouter);
 
 app.use(express.json());
-
+app.use(cookieParser()); // Added missing cookie parser
 app.use(express.static('public'));
-
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
-});
 
 // CreateAuth a new user
 apiRouter.post('/auth/create', async (req, res) => {
@@ -27,7 +25,6 @@ apiRouter.post('/auth/create', async (req, res) => {
     res.status(409).send({ msg: 'Existing user' });
   } else {
     const user = await createUser(req.body.email, req.body.password);
-
     setAuthCookie(res, user.token);
     res.send({ email: user.email });
   }
@@ -36,13 +33,17 @@ apiRouter.post('/auth/create', async (req, res) => {
 // Middleware to verify that the user is authorized to call an endpoint
 const verifyAuth = async (req, res, next) => {
   const user = await findUser('token', req.cookies[authCookieName]);
+  const token = req.cookies[authCookieName];
+  console.log('=== AUTH DEBUG ===');
+  console.log('Request to:', req.path);
+  console.log('Cookies:', req.cookies);
+  console.log('Token present:', !!token);
   if (user) {
     next();
   } else {
     res.status(401).send({ msg: 'Unauthorized' });
   }
 };
-
 
 // GetAuth login an existing user
 apiRouter.post('/auth/login', async (req, res) => {
@@ -79,6 +80,28 @@ apiRouter.post('/score', verifyAuth, (req, res) => {
   res.send(scores);
 });
 
+// drawing a card
+apiRouter.get('/play/draw', verifyAuth, (_req, res) => {
+  if (availDeck.length === 0) {
+    return res.send({ Card: -1 });
+  }
+
+  const randomIndex = Math.floor(Math.random() * availDeck.length);
+  const randomCard = availDeck[randomIndex];
+  availDeck.splice(randomIndex, 1);
+
+  res.send({ Card: randomCard });
+});
+
+// checking length of avail 
+apiRouter.get('/play/checkDeck', verifyAuth, (_req, res) => {
+  if (availDeck.length === 0) {
+    res.send({ value: 0 });
+  } else {
+    res.send({ value: 1 });
+  }
+});
+
 // Default error handler
 app.use(function (err, req, res, next) {
   res.status(500).send({ type: err.name, message: err.message });
@@ -105,7 +128,6 @@ async function createUser(email, password) {
 
 async function findUser(field, value) {
   if (!value) return null;
-
   return users.find((u) => u[field] === value);
 }
 
@@ -118,7 +140,12 @@ function setAuthCookie(res, authToken) {
   });
 }
 
-// GetScores
-apiRouter.get('/scores', verifyAuth, (_req, res) => {
-  res.send(scores);
+// Helper function for scores (added missing function)
+function updateScores(newScore) {
+  scores.push(newScore);
+  return scores;
+}
+
+app.listen(port, () => {
+  console.log(`Listening on port ${port}`);
 });

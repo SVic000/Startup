@@ -8,16 +8,22 @@ export function Menu(props) {
   const [catFact, setCatFact] = useState("Loading...")
 
   React.useEffect(()=> {
-    setCatFact('Wow, Cats are super cool!');
+    fetch('https://catfact.ninja/fact')
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+      setCatFact(data.fact)})
+    .catch();
   }, []);
 
   return (
     <main className="container-fluid">
       <div className="Main-container d-flex justify-content-center flex-column align-items-center">
-        <div id="catfact">
-          <h5 className="sticky-line text-centers">
+        <div id="catfact" className="sticky-line text-center">
+          <h6> Fun Fact!</h6>
+          <h6>
            {catFact}
-          </h5>
+          </h6>
         </div>
 
         <div className="w-100 text-center sticky-line">
