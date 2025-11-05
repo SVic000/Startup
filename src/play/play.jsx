@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { draw, updatePlayerScore } from './PlayFunct';
 import './play.css';
 
+//// figure out avail deck......
 export function Play() {
   //  ----- CONSTANTS AND STATES -----------
   const navigate = useNavigate();

@@ -4,7 +4,6 @@ const cookieParser = require('cookie-parser');
 const bcrypt = require('bcryptjs');
 const uuid = require('uuid');
 
-const port = process.argv.length > 2 ? process.argv[2] : 3000;
 const authCookieName = 'token';
 
 let users = [];
@@ -12,12 +11,20 @@ let scores = [];
 let availDeck = [1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9];
 let currentGames = {};
 
-let apiRouter = express.Router();
-app.use(`/api`, apiRouter);
+const port = process.argv.length > 2 ? process.argv[2] : 3000;
 
+// JSON body parsing using built-in middleware
 app.use(express.json());
-app.use(cookieParser()); // Added missing cookie parser
+
+// Use the cookie parser middleware for tracking authentication tokens
+app.use(cookieParser());
+
+// Serve up the front-end static content hosting
 app.use(express.static('public'));
+
+// Router for service endpoints
+var apiRouter = express.Router();
+app.use(`/api`, apiRouter);
 
 // CreateAuth a new user
 apiRouter.post('/auth/create', async (req, res) => {
@@ -25,25 +32,11 @@ apiRouter.post('/auth/create', async (req, res) => {
     res.status(409).send({ msg: 'Existing user' });
   } else {
     const user = await createUser(req.body.email, req.body.password);
+
     setAuthCookie(res, user.token);
     res.send({ email: user.email });
   }
 });
-
-// Middleware to verify that the user is authorized to call an endpoint
-const verifyAuth = async (req, res, next) => {
-  const user = await findUser('token', req.cookies[authCookieName]);
-  const token = req.cookies[authCookieName];
-  console.log('=== AUTH DEBUG ===');
-  console.log('Request to:', req.path);
-  console.log('Cookies:', req.cookies);
-  console.log('Token present:', !!token);
-  if (user) {
-    next();
-  } else {
-    res.status(401).send({ msg: 'Unauthorized' });
-  }
-};
 
 // GetAuth login an existing user
 apiRouter.post('/auth/login', async (req, res) => {
@@ -68,6 +61,16 @@ apiRouter.delete('/auth/logout', async (req, res) => {
   res.clearCookie(authCookieName);
   res.status(204).end();
 });
+
+// Middleware to verify that the user is authorized to call an endpoint
+const verifyAuth = async (req, res, next) => {
+  const user = await findUser('token', req.cookies[authCookieName]);
+  if (user) {
+    next();
+  } else {
+    res.status(401).send({ msg: 'Unauthorized' });
+  }
+};
 
 // GetScores
 apiRouter.get('/scores', verifyAuth, (_req, res) => {
@@ -134,18 +137,15 @@ async function findUser(field, value) {
 // setAuthCookie in the HTTP response
 function setAuthCookie(res, authToken) {
   res.cookie(authCookieName, authToken, {
+    maxAge: 1000 * 60 * 60 * 24 * 365,
     secure: true,
     httpOnly: true,
     sameSite: 'strict',
   });
 }
 
-// Helper function for scores (added missing function)
+// Helper function for scores
 function updateScores(newScore) {
   scores.push(newScore);
   return scores;
 }
-
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
-});
