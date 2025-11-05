@@ -149,3 +149,5 @@ function updateScores(newScore) {
   scores.push(newScore);
   return scores;
 }
+
+app.listen(port)
