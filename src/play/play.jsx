@@ -5,6 +5,60 @@ import './play.css';
 
 //// figure out avail deck......
 export function Play() {
+  // give player a gameid! only run once
+  const [gameID, setGameID] = useState(null);
+
+  useEffect(()=> {
+    async function createNewGame() {
+      try {
+        const response = await fetch('/play/new', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error('Error creating game: ', errorData.msg);
+          return;
+        }
+
+        const data = await response.json();
+        console.log('New game created with ID: ', data.gameId);
+        setGameId(data.gameId);
+      } catch (err) {
+        console.error("Error creating game: ", err);
+      }
+    } 
+    createNewGame();
+  }, [])
+
+  // deleting gameId function for later
+  async function deleteCurrentGame(gameID) {
+    try {
+      const response = await fetch('/api/play/delete', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({gameID}),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        console.error("Failed to delete game:", data.msg || response.statusText);
+        return false;
+      }
+      console.log("Game deleted successfully: ", data);
+      return true;
+    } catch (error) {
+      console.error("Error deleting game: ", error);
+      return false;
+    }
+    }
+
   //  ----- CONSTANTS AND STATES -----------
   const navigate = useNavigate();
 
@@ -656,11 +710,13 @@ export function Play() {
       {gamephase === 'end' && (
         <div id='end-buttons'>
           <p className = "narrator" style = {{ fontFamily: 'Trebuchet MS'}}> Game Over! Final Score: You {playerPairs} - Frank {opponentPairs}</p>
+        {/* Restart button for later, will be a play again button? maybe?
         <button id="Restart" onClick={() => {
           handleRestart();
           }}>
             <b>Play Again?</b>
           </button>
+          */}
           <button
             type="button"
             className="scores"

@@ -25,7 +25,8 @@ export async function updatePlayerScore(pointsToAdd) {
             console.log(score.playerScore);
             newScore+= score.playerScore || 0
         })
-// make the api call here to change the playre score!
+
+// make the api call here to change the player score!
         await fetch('/api/score', {
             method: 'POST',
             headers: {'content-type': 'application/json'},
