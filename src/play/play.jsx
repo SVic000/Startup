@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { draw, updatePlayerScore } from './PlayFunct';
+import { draw, updatePlayerScore, checkDeck } from './PlayFunct';
 import './play.css';
 
 //// figure out avail deck......
@@ -11,7 +11,7 @@ export function Play() {
   useEffect(()=> {
     async function createNewGame() {
       try {
-        const response = await fetch('/play/new', {
+        const response = await fetch('/api/play/new', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -26,8 +26,8 @@ export function Play() {
         }
 
         const data = await response.json();
-        console.log('New game created with ID: ', data.gameId);
-        setGameId(data.gameId);
+        // console.log('New game created with ID: ', data.gameID);
+        setGameID(data.gameID);
       } catch (err) {
         console.error("Error creating game: ", err);
       }
@@ -51,7 +51,7 @@ export function Play() {
         console.error("Failed to delete game:", data.msg || response.statusText);
         return false;
       }
-      console.log("Game deleted successfully: ", data);
+      // console.log("Game deleted successfully: ", data);
       return true;
     } catch (error) {
       console.error("Error deleting game: ", error);
@@ -75,11 +75,10 @@ export function Play() {
   const [opponentQuestion, setOpponentQuestion] = useState(null); // what Franks asking player
   const [goFishContext, setGoFishContext] = useState(null); // Whether the go fish is for you or them
 
-  const [availDeck, setAvailDeck] = useState([1,1,2,2,3,3,4,4]);
+  const [availDeck, setAvailDeck] = useState(true);
   const [playerHand, setPlayerHand] = useState([]);
   const [opponentHand, setOpponentHand] = useState([]);
   const opponentHandRef = useRef([]);
-  const availDeckRef = useRef([]);
 
   const [playerPairs, setPlayerPair] = useState(0);
   const [opponentPairs, setOpponentPair] = useState(0);
@@ -87,11 +86,13 @@ export function Play() {
   const [message, setMessage] = useState(''); // guides player
   const [opponentWords, setOpponentWords] = useState(''); // hard coded opponent words
 
+
   // ------ Player Draw Function --------
   function handleRestart() {
+    // ignore this funciton, I don't know if I want to impliment this anymore
     setPlayerHand([]);
     setOpponentHand([]);
-    setAvailDeck([1,1,2,2]);
+    setAvailDeck(true);
     setCurrentTurn(null);
     setStartingPlayer(Math.floor(Math.random() * 2));
     setFrankFace('Default')
@@ -109,17 +110,18 @@ export function Play() {
     setHasStarted(false);
   }
 
-  function handleDraw() {
-    const {newDeck, newHand } = draw(availDeck, playerHand);
-    setAvailDeck(newDeck);
+  async function handleDraw() {
+    // console.log(availDeck)
+    if(!availDeck) return;
+    const {newHand, deckEmpty} = await draw(playerHand);
     setPlayerHand(newHand);
+    setAvailDeck(deckEmpty);
 
     if (gamephase === 'setup') {
       setDrawCount(prev => prev + 1);
     } else {
       setDrawCount(1);
     }
-
     if (goFishContext === 'player-ask') {
       setSelectedCardForAsk(null);
       setGoFishContext(null);
@@ -160,10 +162,6 @@ export function Play() {
       const newHand = playerHand.filter((_, i) => i !== card1.index && i !== card2.index);
       setPlayerHand(newHand);
       setSelectedCards([]);
-
-      setTimeout(() => {
-        checkGameEndConditions();
-      }, 100);
     } else {
       setMessage("Not a match! Keep fishing!");
       setTimeout(() => setSelectedCards([]), 1000);
@@ -216,10 +214,6 @@ export function Play() {
           setFrankFace("Annoyed");
         }, 900);
         setSelectedCardForAsk(null);
-      
-        setTimeout(() => {
-          checkGameEndConditions();
-        }, 100);
       } else {
         setMessage(`Frank doesn't have any ${selectedCardValue}s. Go Fish!`);
         setOpponentWords(`Heh. I dont have any ${selectedCardValue}s`);
@@ -273,7 +267,6 @@ export function Play() {
         setAskedQuestion(0);
         setOpponentWords('');
         setFrankFace('Default');
-        checkGameEndConditions();
       }, 1500)
     } else {
       setMessage("That's not the card Frank asked for!");
@@ -309,10 +302,6 @@ export function Play() {
     if (pairsFound > 0) {
       setOpponentHand(newOpponentHand);
       setOpponentPair(prev => prev + (pairsFound / 2));
-
-      setTimeout(() => {
-        checkGameEndConditions();
-      }, 500);
     }
   }
 
@@ -338,16 +327,11 @@ export function Play() {
     opponentHandRef.current = opponentHand;
   }, [opponentHand]);
 
-  useEffect(() => {
-    availDeckRef.current = availDeck;
-  }, [availDeck]);
-
-  function opponentDraw() {
-    if(availDeck.length === 0) return;
-    const { newDeck, newHand } = draw(availDeckRef.current, opponentHandRef.current);
-    availDeckRef.current = newDeck;
+  async function opponentDraw() {
+    if(!availDeck) return
+    const { newHand, deckEmpty } = await draw(opponentHandRef.current);
     opponentHandRef.current = newHand;
-    setAvailDeck(newDeck);
+    setAvailDeck(deckEmpty);
     setOpponentHand(newHand);
   }
 
@@ -365,13 +349,13 @@ export function Play() {
     }
     
     // End game if deck is empty AND both players have no cards AND no pairs can be made
-    if (availDeck.length === 0 && playerHand.length === 0 && opponentHand.length === 0) {
+    if (!availDeck && playerHand.length === 0 && opponentHand.length === 0) {
       handleGameEnd();
       return true;
     }
     
     // End game if deck is empty and current player has no cards to play
-    if (availDeck.length === 0) {
+    if (!availDeck) {
       if (current_turn === 'player' && playerHand.length === 0) {
         // But only end if opponent also can't play or it's a natural stopping point
         setTimeout(() => {
@@ -409,7 +393,9 @@ export function Play() {
         setOpponentWords("A tie! We're equally matched! Good game!");
         updatePlayerScore(0);
       }
+      deleteCurrentGame(gameID);
     }, 100);
+    
   }
 
   // ------------------ USE EFFECTS FOR GAME START -----------
@@ -488,7 +474,7 @@ export function Play() {
   useEffect(() => {
     if (gamephase === 'main' && current_turn === 'opponent' && askedQuestion === 0) {
       // If Frank has no cards but deck has cards, he should draw
-      if (opponentHand.length === 0 && availDeck.length > 0) {
+      if (opponentHand.length === 0 && availDeck) {
         setTimeout(() => {
           opponentDraw();
           setMessage("Frank has no cards, so he draws one");
@@ -511,7 +497,7 @@ export function Play() {
       }
       
       // If Frank has no cards and deck is empty, end his turn
-      if (opponentHand.length === 0 && availDeck.length === 0) {
+      if (opponentHand.length === 0 && !availDeck) {
         setTimeout(() => {
           setCurrentTurn('player');
           setAskedQuestion(0);
@@ -520,22 +506,19 @@ export function Play() {
         }, 1000);
       }
     }
-  }, [current_turn, gamephase, opponentQuestion, askedQuestion, opponentHand.length, availDeck.length]);
+  }, [current_turn, gamephase, opponentQuestion, askedQuestion, opponentHand.length, availDeck]);
 
   // Main end condition checker
   useEffect(() => {
-    if (gamephase === 'main') {
-      const timer = setTimeout(() => {
-        checkGameEndConditions();
-      }, 300);
-      return () => clearTimeout(timer);
+    if (checkGameEndConditions()) {
+      handleGameEnd();
     }
-  }, [playerPairs, opponentPairs, gamephase]);
+  }, [playerHand, opponentHand, playerPairs, opponentPairs, availDeck]);
 
   // Empty hands end condition
   useEffect(() => {
     if (gamephase === 'main' && 
-        availDeck.length === 0 && 
+        !availDeck && 
         playerHand.length === 0 && 
         opponentHand.length === 0) {
       // Small delay to ensure all state updates are complete
@@ -543,7 +526,8 @@ export function Play() {
         handleGameEnd();
       }, 1000);
     }
-  }, [availDeck.length, playerHand.length, opponentHand.length, gamephase]);
+  }, [availDeck, playerHand.length, opponentHand.length, gamephase]);
+
   useEffect(()=>{
     if(gamephase === 'end') {
       setFrankFace('GameEnd');
@@ -627,7 +611,7 @@ export function Play() {
         )}
         
         {/* GO FISH PLAYER BUTTON */}
-        {gamephase === 'main' && goFishContext === 'player-ask' && current_turn === 'player' &&(
+        {gamephase === 'main' && goFishContext === 'player-ask' && current_turn === 'player' && availDeck && (
           <button 
             id="go-fish"
             onClick={handleDraw}
@@ -664,7 +648,7 @@ export function Play() {
         {/* End Turn Button */}
         {(current_turn === 'player' && gamephase === 'main' && 
           ((selectedCardForAsk === null && askedQuestion !== 0) || 
-           (playerHand.length === 0 && availDeck.length === 0))) && (
+           (playerHand.length === 0 && !availDeck))) && (
           <button id="end-turn" onClick={() => {
             setCurrentTurn('opponent');
             setAskedQuestion(0);

@@ -1,20 +1,58 @@
 // Hold everything in logic here
+// frontend checkDeck function
+export async function checkDeck() {
+  try {
+    const response = await fetch('/api/play/checkDeck', {
+      method: 'GET',
+      credentials: 'include', // include auth cookie
+    });
 
-export function draw(deck, hand) {
-    if(deck.length === 0) {
-        // no cards left in pile
-        // perhaps just end the players turn? since draw is usually a last instance?
-        return {newDeck: deck, newHand: hand};
+    if (!response.ok) {
+      throw new Error('Failed to check deck on server.');
     }
-    const randomIndex = Math.floor(Math.random() * deck.length);
-    const randomCard = deck[randomIndex]; // pick available random num
 
-    const newDeck = [...deck];
-    newDeck.splice(randomIndex, 1);
-    const newHand = [...hand, randomCard];
+    const data = await response.json();
 
-    return { newDeck, newHand };
+    // backend sends { value: 0 } if empty, { value: 1 } if cards available
+    return data.value === 1; // true if deck has cards, false if empty
+
+  } catch (err) {
+    console.error('Error checking deck:', err);
+    return false; // safest fallback: treat as empty
+  }
 }
+
+// frontend draw function that calls backend
+export async function draw(currentHand) {
+  try {
+    // Call backend to draw a card
+    const response = await fetch('/api/play/draw', {
+      method: 'GET',
+      credentials: 'include', // include auth cookie for auth
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to draw a card from the server.');
+    }
+
+    const data = await response.json();
+
+    // Backend sends { Card: -1 } if deck is empty
+    if (data.Card === -1) {
+      console.log('Deck is empty, no card drawn.');
+      return { newHand: currentHand, deckEmpty: false };
+    }
+
+    // Add the drawn card to the hand
+    const newHand = [...currentHand, data.Card];
+    return { newHand, deckEmpty: true };
+
+  } catch (err) {
+    console.error('Error drawing card:', err);
+    return { newHand: currentHand, deckEmpty: null };
+  }
+}
+
 
 export async function updatePlayerScore(pointsToAdd) {
     try {
