@@ -5,6 +5,9 @@ import './play.css';
 
 //// figure out avail deck......
 export function Play() {
+
+  // add use effect that runs once to check if the players in the middle of a game here!
+  
   // give player a gameid! only run once
   const [gameID, setGameID] = useState(null);
 

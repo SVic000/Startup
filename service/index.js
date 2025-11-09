@@ -174,7 +174,8 @@ apiRouter.get('/play/checkDeck', verifyAuth, async (req, res) => {
 
 // create new game id and tie it to the user and also create a new deck tied to the game id
 apiRouter.post('/play/new', verifyAuth, async(req,res) => {
-  // maybe tie the player hand to their user too! So if they reload the page they can get back to the same game
+  // tie the player hand to their user too! So if they reload the page they can get back to the same game
+  // also put game states associated with the currentGames id
   const user = await findUser('token', req.cookies[authCookieName]);
   if (!user) return res.status(401).send({mes: 'Unauthorized'});
 
@@ -188,12 +189,14 @@ apiRouter.post('/play/new', verifyAuth, async(req,res) => {
   
   currentGames[gameID] = {
     id: gameID,
+    gamePhase: null, // modify this too with other endpoint calls?
     deck: gameDeck,
     player: { [user.email]: {email: user.email}},
     host: user.email,
     createdAt: Date.now(),
     lock: false, 
-    timeout: null
+    timeout: null,
+    playerHand: [] // modify this bad boy
   }
   user.gameID = gameID;
 
