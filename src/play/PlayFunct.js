@@ -24,7 +24,7 @@ export async function checkDeck() {
 
 // frontend draw function that calls backend
 export async function draw(currentHand) {
-  try {
+  try { // add the stuff here that calls to back end so you can change the player hand there.
     // Call backend to draw a card
     const response = await fetch('/api/play/draw', {
       method: 'GET',
