@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { draw, updatePlayerScore, checkDeck } from './PlayFunct';
 import './play.css';
 
-//// figure out avail deck......
 export function Play() {
 
   // add use effect that runs once to check if the players in the middle of a game here!
@@ -75,11 +74,12 @@ export function Play() {
   const [selectedCardForAsk, setSelectedCardForAsk] = useState(null); // just one card selected, you can ask a question on that card
   const [frankFace, setFrankFace] = useState('Default') // Default | No | Shocked | Annoyed | Excited | GameEnd
   
-  const [opponentQuestion, setOpponentQuestion] = useState(null); // what Franks asking player
-  const [goFishContext, setGoFishContext] = useState(null); // Whether the go fish is for you or them
+  const [opponentQuestion, setOpponentQuestion] = useState(null); // what Franks asking player 
+  const [goFishContext, setGoFishContext] = useState(null); // Whether the go fish is for you or them 
 
   const [availDeck, setAvailDeck] = useState(true);
-  const [playerHand, setPlayerHand] = useState([]);
+  const [playerHand, setPlayerHand] = useState([]); // 
+
   const [opponentHand, setOpponentHand] = useState([]);
   const opponentHandRef = useRef([]);
 
@@ -231,8 +231,16 @@ export function Play() {
   // ------------- OPPONENT MOVES ----------------
   function opponentAsk() {
     if (current_turn !== "opponent" || askedQuestion !== 0) return;
+    
+  // If opponent has no cards AND deck is empty, end their turn
+  if (opponentHand.length === 0 && !availDeck) {
+    setCurrentTurn('player');
+    setAskedQuestion(0);
+    setMessage('Your turn! Frank has no cards left.');
+    return;
+  }
 
-    if (opponentHand.length === 0) {
+  if (opponentHand.length === 0) {
       return;
     }
 
@@ -377,32 +385,55 @@ export function Play() {
     return false;
   }
 
-  function handleGameEnd() {
-    setGamePhase('end');
-    setCurrentTurn(null);
+function handleGameEnd() {
+  if (gamephase === 'end') return; // Prevent multiple calls
+  
+  setGamePhase('end');
+  setCurrentTurn(null);
+  setFrankFace('GameEnd');
 
-    setTimeout(() => {
-      setFrankFace('GameEnd')
-      if (playerPairs > opponentPairs) {
-        setMessage("You won! Greatest fisher here!");
-        setOpponentWords("Oof, you were a strong opponent! Good game!");
-        updatePlayerScore(.5);
-      } else if (opponentPairs > playerPairs) {
-        setMessage("Frank won! An amazing battle!");
-        setOpponentWords("Heh, you were a tough foe. Good game!");
-        updatePlayerScore(0);
-      } else {
-        setMessage("It's a tie! What an intense match!");
-        setOpponentWords("A tie! We're equally matched! Good game!");
-        updatePlayerScore(0);
-      }
-      deleteCurrentGame(gameID);
-    }, 100);
-    
+  if (playerPairs > opponentPairs) {
+    setMessage("You won! Greatest fisher here!");
+    setOpponentWords("Oof, you were a strong opponent! Good game!");
+    updatePlayerScore(0.5);
+  } else if (opponentPairs > playerPairs) {
+    setMessage("Frank won! An amazing battle!");
+    setOpponentWords("Heh, you were a tough foe. Good game!");
+    updatePlayerScore(0);
+  } else {
+    setMessage("It's a tie! What an intense match!");
+    setOpponentWords("A tie! We're equally matched! Good game!");
+    updatePlayerScore(0);
   }
+  
+  deleteCurrentGame(gameID);
+}
+
+  // end game use effect
+  useEffect(() => {
+    if (gamephase !== 'main') return;
+    
+    const totalPossiblePairs = 9;
+    const totalPairsMade = playerPairs + opponentPairs;
+    
+    // Condition 1: All pairs have been found
+    if (totalPairsMade >= totalPossiblePairs) {
+      // console.log("End game: All pairs found");
+      handleGameEnd();
+      return;
+    }
+    
+    // Condition 2: Deck is empty AND both players have no cards left
+    if (!availDeck && playerHand.length === 0 && opponentHand.length === 0) {
+      // console.log("End game: No cards left");
+      handleGameEnd();
+      return;
+    }
+    
+  }, [gamephase, playerPairs, opponentPairs, availDeck, playerHand.length, opponentHand.length]);
 
   // ------------------ USE EFFECTS FOR GAME START -----------
-  useEffect(() => {
+  useEffect(() => { // 
     if (!hasStarted) {
       setHasStarted(true);
 
@@ -473,63 +504,40 @@ export function Play() {
     }
   }, [opponentHand, gamephase]);
 
-  // Frank's turn logic
-  useEffect(() => {
-    if (gamephase === 'main' && current_turn === 'opponent' && askedQuestion === 0) {
-      // If Frank has no cards but deck has cards, he should draw
-      if (opponentHand.length === 0 && availDeck) {
-        setTimeout(() => {
-          opponentDraw();
-          setMessage("Frank has no cards, so he draws one");
-          setTimeout(() => {
-            if (opponentHandRef.current.length > 0) {
-              opponentAsk();
-            } else {
-              setCurrentTurn('player');
-              setAskedQuestion(0);
-              setMessage('Your turn!');
-            }
-          }, 1000);
-        }, 1000);
-        return;
-      }
-      
-      // If Frank has cards, he can ask
-      if (opponentHand.length > 0 && !opponentQuestion) {
-        setTimeout(() => opponentAsk(), 1000);
-      }
-      
-      // If Frank has no cards and deck is empty, end his turn
-      if (opponentHand.length === 0 && !availDeck) {
-        setTimeout(() => {
-          setCurrentTurn('player');
-          setAskedQuestion(0);
-          setMessage('Your turn! Frank has no cards left.');
-          setFrankFace('Default');
-        }, 1000);
-      }
-    }
-  }, [current_turn, gamephase, opponentQuestion, askedQuestion, opponentHand.length, availDeck]);
-
-  // Main end condition checker
-  useEffect(() => {
-    if (checkGameEndConditions()) {
-      handleGameEnd();
-    }
-  }, [playerHand, opponentHand, playerPairs, opponentPairs, availDeck]);
-
-  // Empty hands end condition
-  useEffect(() => {
-    if (gamephase === 'main' && 
-        !availDeck && 
-        playerHand.length === 0 && 
-        opponentHand.length === 0) {
-      // Small delay to ensure all state updates are complete
+// Frank's turn logic
+useEffect(() => {
+  if (gamephase === 'main' && current_turn === 'opponent' && askedQuestion === 0) {
+    // If Frank has no cards but deck has cards, he should draw
+    if (opponentHand.length === 0 && availDeck) {
       setTimeout(() => {
-        handleGameEnd();
+        opponentDraw();
+        setMessage("Frank has no cards, so he draws one");
+        setTimeout(() => {
+          if (opponentHandRef.current.length > 0) {
+            opponentAsk();
+          }
+        }, 1000);
+      }, 1000);
+      return;
+    }
+    
+    // If Frank has cards, he can ask
+    if (opponentHand.length > 0 && !opponentQuestion) {
+      setTimeout(() => opponentAsk(), 1000);
+    }
+    
+    // If Frank has no cards and deck is empty, end his turn
+    if (opponentHand.length === 0 && !availDeck) {
+      setTimeout(() => {
+        setCurrentTurn('player');
+        setAskedQuestion(0);
+        setMessage('Your turn! Frank has no cards left.');
+        setFrankFace('Default');
       }, 1000);
     }
-  }, [availDeck, playerHand.length, opponentHand.length, gamephase]);
+  }
+}, [current_turn, gamephase, opponentQuestion, askedQuestion, opponentHand.length, availDeck]);
+  
 
   useEffect(()=>{
     if(gamephase === 'end') {

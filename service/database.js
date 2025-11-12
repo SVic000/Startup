@@ -6,6 +6,7 @@ const client = new MongoClient(url);
 const db = client.db('startup');
 const userCollection = db.collection('user');
 const scoreCollection = db.collection('score');
+const currentGamesCollection = db.collection('currentGames');
 
 // This will asynchronously test the connection and exit the process if it fails
 (async function testConnection() {
@@ -34,14 +35,43 @@ async function updateUser(user) {
   await userCollection.updateOne({ email: user.email }, { $set: user });
 }
 
-async function addScore(score) {
-  return scoreCollection.insertOne(score);
+async function updateScoreDB(score) {
+  await scoreCollection.updateOne( { user: score.user }, { $set: score}, { upsert: true } );
 }
 
+async function getScore(user) {
+  return scoreCollection.findOne( { user : user} );
+}
+
+async function addGame(game) {
+  return currentGamesCollection.insertOne(game);
+}
+
+async function deleteGame(gameID) {
+
+  const result = await currentGamesCollection.deleteOne({ gameID: gameID });
+  return result;
+}
+
+async function getDeck(gameID) {
+  findgame = await currentGamesCollection.findOne( { gameID : gameID });
+  return findgame.deck;
+}
+async function updateDeck(gameID, newDeck) {
+  await currentGamesCollection.updateOne (
+    { gameID: gameID}, 
+    {$set: {deck: newDeck}}
+  )
+}
 module.exports = {
   getUser,
   getUserByToken,
   addUser,
   updateUser,
-  addScore,
+  updateScoreDB,
+  addGame,
+  getDeck,
+  deleteGame,
+  getScore,
+  updateDeck,
 };

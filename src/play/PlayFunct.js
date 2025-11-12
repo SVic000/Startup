@@ -39,7 +39,7 @@ export async function draw(currentHand) {
 
     // Backend sends { Card: -1 } if deck is empty
     if (data.Card === -1) {
-      console.log('Deck is empty, no card drawn.');
+      // console.log('Deck is empty, no card drawn.');
       return { newHand: currentHand, deckEmpty: false };
     }
 
@@ -60,7 +60,6 @@ export async function updatePlayerScore(pointsToAdd) {
         await fetch('/api/scores')
         .then((response)=> response.json())
         .then((score)=> {
-            console.log(score.playerScore);
             newScore+= score.playerScore || 0
         })
 
@@ -74,3 +73,7 @@ export async function updatePlayerScore(pointsToAdd) {
         console.error('Error updating score in Service:', error);
     }
 }
+
+// function to call backend to check gamephase
+
+// function to call backend to know how many draws the player has?

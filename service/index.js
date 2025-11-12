@@ -10,17 +10,15 @@ const authCookieName = 'token';
 let users = [];
 let scores = {};
 let currentGames = {};
+let waiting = [];
 
 const port = process.argv.length > 2 ? process.argv[2] : 3000;
 
-app.use((req,res,next)=> { // I use this function to check things within the backend
+app.use((req,res,next)=> { // I use this function to check things within the backend // claude
   //console.log(req.url)
   //console.log(req.params)
   //console.log(req.body)
-
-  // console.log(users)
-  // console.log(currentGames)
-  next()
+  next();
 })
 
 // JSON body parsing using built-in middleware
@@ -54,6 +52,7 @@ apiRouter.post('/auth/login', async (req, res) => {
   if (user) {
     if (await bcrypt.compare(req.body.password, user.password)) {
       user.token = uuid.v4();
+      await DB.updateUser(user);
       setAuthCookie(res, user.token);
       res.send({ email: user.email });
       return;
@@ -67,6 +66,7 @@ apiRouter.delete('/auth/logout', async (req, res) => {
   const user = await findUser('token', req.cookies[authCookieName]);
   if (user) {
     delete user.token;
+    DB.updateUser(user);
   }
   res.clearCookie(authCookieName);
   res.status(204).end();
@@ -85,8 +85,9 @@ const verifyAuth = async (req, res, next) => {
 // GetScores
 apiRouter.get('/scores', verifyAuth, async (_req, res) => {
   const user = await findUser('token', _req.cookies[authCookieName]);
+  const userScore = await DB.getScore(user.email);
 
-  res.send({playerScore : scores[user.email]});
+  res.send({ playerScore : userScore.score });
 });
 
 // SubmitScore
@@ -101,8 +102,15 @@ apiRouter.post('/score', verifyAuth, async (req, res) => {
 // Helper function for scores
 function updateScores(user, newScore) {
   scores[user] = newScore;
+  const userScore = { 
+    user: user,
+    score: newScore,
+  }
+  DB.updateScoreDB(userScore);
   return scores;
 }
+
+
 
 // Default error handler
 app.use(function (err, req, res, next) {
@@ -122,15 +130,20 @@ async function createUser(email, password) {
     email: email,
     password: passwordHash,
     token: uuid.v4(),
+    gameID: null,
   };
-  users.push(user);
+  await DB.addUser(user);
 
   return user;
 }
 
 async function findUser(field, value) {
   if (!value) return null;
-  return users.find((u) => u[field] === value);
+
+  if (field === 'token') {
+    return DB.getUserByToken(value);
+  }
+  return DB.getUser(value);
 }
 
 // setAuthCookie in the HTTP response
@@ -147,10 +160,7 @@ function setAuthCookie(res, authToken) {
 // drawing a card for user in game
 apiRouter.get('/play/draw', verifyAuth, async (req, res) => {
   const user = await findUser('token', req.cookies[authCookieName]);
-  const deck = currentGames[user.gameID].deck;
-
-  console.log(user)
-  console.log(deck)
+  const deck = await DB.getDeck(user.gameID);
 
   if (deck.length === 0) {
     return res.send({ Card: -1 });
@@ -159,14 +169,17 @@ apiRouter.get('/play/draw', verifyAuth, async (req, res) => {
   const randomCard = deck[randomIndex];
   deck.splice(randomIndex, 1);
 
+  await DB.updateDeck(user.gameID, deck);
+
   res.send({ Card: randomCard });
 });
 
 // checking length of avail Deck for game
 apiRouter.get('/play/checkDeck', verifyAuth, async (req, res) => {
   const user = await findUser('token', req.cookies[authCookieName]);
-  const deck = currentGames[user.gameID].deck;
-  if (deck.length === 0) {
+  const deck = await DB.getDeck(user.gameID); // Fixed!
+  
+  if (!deck || deck.length === 0) {
     res.send({ value: 0 });
   } else {
     res.send({ value: 1 });
@@ -175,32 +188,31 @@ apiRouter.get('/play/checkDeck', verifyAuth, async (req, res) => {
 
 // create new game id and tie it to the user and also create a new deck tied to the game id
 apiRouter.post('/play/new', verifyAuth, async(req,res) => {
-  // tie the player hand to their user too! So if they reload the page they can get back to the same game
   // also put game states associated with the currentGames id
   const user = await findUser('token', req.cookies[authCookieName]);
-  if (!user) return res.status(401).send({mes: 'Unauthorized'});
 
+  if (!user) return res.status(401).send({mes: 'Unauthorized'});
   if (user.gameID) {
     return res.status(400).send({ msg: 'User already in a game'});
   }
-
   
   const gameID = uuid.v4();
   const gameDeck = [1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9];
   
-  currentGames[gameID] = {
-    id: gameID,
+  const game = {
+    gameID: gameID,
+    hasStarted: false, // change this someday
+    whosTurn: 0,
+    startingPlayer: Math.floor(Math.random() * 2),
     gamePhase: null, // modify this too with other endpoint calls?
     deck: gameDeck,
-    player: { [user.email]: {email: user.email}},
-    host: user.email,
-    createdAt: Date.now(),
-    lock: false, 
-    timeout: null,
-    playerHand: [] // modify this bad boy
+    players: { [user.email]: {email: user.email}},
   }
-  user.gameID = gameID;
 
+  await DB.addGame(game);
+
+  user.gameID = gameID;
+  await DB.updateUser(user);
   res.send({gameID});
 })
 
@@ -213,18 +225,26 @@ apiRouter.delete('/play/delete', verifyAuth, async (req, res) => {
   }
 
   const gameID = req.body.gameID || user.gameID;
+  console.log("Deleting game with ID:", gameID);
 
   // Delete from in-memory store
   if (currentGames[gameID]) {
     delete currentGames[gameID];
   }
-
+  
+  const deleteResult = await DB.deleteGame(gameID);
+  console.log("Database delete result:", deleteResult);
+  
   // Remove the link from the user
   user.gameID = null;
+  await DB.updateUser(user);
 
   res.send({ msg: 'Game deleted successfully' });
 });
 
+// update game phase
+
+// update how many can draw
 
 
 app.listen(port, () => {
