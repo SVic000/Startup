@@ -111,8 +111,9 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **Stores data in MongoDB** - I did not complete this part of the deliverable.
-- [ ] **Stores credentials in MongoDB** - I did not complete this part of the deliverable.
+- [x] **Stores data in MongoDB** - I did complete this part of the deliverable.
+- [x] **Stores credentials in MongoDB** - I did complete this part of the deliverable.
+Right now, My website is still a little buggy, but I plan on locking in and figuring out how to do everything for websocket coming up. I plan on moving a few more things into the database before then like currentturn, who starts, whatgamephase it is, ect. But for now, I've done everything for this deliverable.
 
 ## 🚀 WebSocket deliverable
 
