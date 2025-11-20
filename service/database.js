@@ -7,6 +7,7 @@ const db = client.db('startup');
 const userCollection = db.collection('user');
 const scoreCollection = db.collection('score');
 const currentGamesCollection = db.collection('currentGames');
+const waitlistCollection = db.collection('waitlist');
 
 // This will asynchronously test the connection and exit the process if it fails
 (async function testConnection() {
@@ -48,7 +49,6 @@ async function addGame(game) {
 }
 
 async function deleteGame(gameID) {
-
   const result = await currentGamesCollection.deleteOne({ gameID: gameID });
   return result;
 }
@@ -63,6 +63,41 @@ async function updateDeck(gameID, newDeck) {
     {$set: {deck: newDeck}}
   )
 }
+
+async function checkWaitlist(user) {
+  // Try to find someone waiting
+  const waitingPlayer = await waitlistCollection.findOneAndDelete(
+    {}, 
+    { sort: { _id: 1 } }
+  );
+  
+  if (waitingPlayer) {
+    // Found someone! Create a match
+    const gameID = generateGameID();
+    await matchesCollection.insertOne({
+      gameID: gameID,
+      player1: waitingPlayer.user,
+      player2: user,
+      createdAt: new Date()
+    });
+    
+    return { 
+      matched: true, 
+      opponent: waitingPlayer.user,
+      gameID: gameID 
+    };
+  } else {
+    // No one waiting, add this user
+    await waitlistCollection.insertOne({ 
+      user: user,
+      joinedAt: new Date()
+    });
+    
+    return { matched: false };
+  }
+}
+// 
+
 module.exports = {
   getUser,
   getUserByToken,
@@ -74,4 +109,7 @@ module.exports = {
   deleteGame,
   getScore,
   updateDeck,
+  checkWaitlist,
+  syncToGame, 
+
 };

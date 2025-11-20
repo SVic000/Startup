@@ -131,6 +131,7 @@ async function createUser(email, password) {
     password: passwordHash,
     token: uuid.v4(),
     gameID: null,
+    cat: null,
   };
   await DB.addUser(user);
 
@@ -242,9 +243,7 @@ apiRouter.delete('/play/delete', verifyAuth, async (req, res) => {
   res.send({ msg: 'Game deleted successfully' });
 });
 
-// update game phase
 
-// update how many can draw
 
 
 app.listen(port, () => {
