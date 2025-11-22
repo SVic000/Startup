@@ -4,15 +4,16 @@ const cookieParser = require('cookie-parser');
 const bcrypt = require('bcryptjs');
 const uuid = require('uuid');
 const DB = require('./database.js');
+const http = require('http');
+const { WebSocketServer } = require('ws');
+const { setupWebSocket } = require('./webSocket.js');
+const server = http.createServer(app);
 
 const authCookieName = 'token';
 
-let users = [];
-let scores = {};
-let currentGames = {};
-let waiting = [];
-
 const port = process.argv.length > 2 ? process.argv[2] : 3000;
+
+let scores = {}
 
 app.use((req,res,next)=> { // I use this function to check things within the backend // claude
   //console.log(req.url)
@@ -93,10 +94,8 @@ apiRouter.get('/scores', verifyAuth, async (_req, res) => {
 // SubmitScore
 apiRouter.post('/score', verifyAuth, async (req, res) => {
   const user = await findUser('token', req.cookies[authCookieName]);
-
-  scores = updateScores(user.email, req.body.score);
-
-  res.send(scores);
+  const result = await updateScores(user.email, req.body.score);
+  res.send(result);
 });
 
 // Helper function for scores
@@ -159,7 +158,7 @@ function setAuthCookie(res, authToken) {
 //// -------------------------------- Game Endpoints --------------------------------////
 
 // drawing a card for user in game
-apiRouter.get('/play/draw', verifyAuth, async (req, res) => {
+apiRouter.post('/play/draw', verifyAuth, async (req, res) => {
   const user = await findUser('token', req.cookies[authCookieName]);
   const deck = await DB.getDeck(user.gameID);
 
@@ -227,11 +226,6 @@ apiRouter.delete('/play/delete', verifyAuth, async (req, res) => {
 
   const gameID = req.body.gameID || user.gameID;
   console.log("Deleting game with ID:", gameID);
-
-  // Delete from in-memory store
-  if (currentGames[gameID]) {
-    delete currentGames[gameID];
-  }
   
   const deleteResult = await DB.deleteGame(gameID);
   console.log("Database delete result:", deleteResult);
@@ -243,9 +237,8 @@ apiRouter.delete('/play/delete', verifyAuth, async (req, res) => {
   res.send({ msg: 'Game deleted successfully' });
 });
 
+const io = setupWebSocket(server, DB);
 
-
-
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
+server.listen(3000, () => {
+  console.log('Server running on port 3000');
 });

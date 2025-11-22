@@ -1,4 +1,3 @@
-
 // GameService.js - Handles all game logic independent of opponent type
 
 export class GameService {
@@ -23,11 +22,11 @@ export class GameService {
       const data = await response.json();
       
       if (data.Card === -1) {
-        return { newHand: currentHand, deckEmpty: false };
+        return { newHand: currentHand, deckEmpty: true };
       }
       
       const newHand = [...currentHand, data.Card];
-      return { newHand, deckEmpty: true };
+      return { newHand, deckEmpty: false };
     } catch (err) {
       console.error('Error drawing card:', err);
       return { newHand: currentHand, deckEmpty: null };

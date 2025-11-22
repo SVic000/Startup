@@ -96,6 +96,10 @@ async function checkWaitlist(user) {
     return { matched: false };
   }
 }
+async function getGame(gameID) {
+  return gamesCollection.findOne({ gameID });
+}
+
 // 
 
 module.exports = {
@@ -111,5 +115,5 @@ module.exports = {
   updateDeck,
   checkWaitlist,
   syncToGame, 
-
+  getGame,
 };
