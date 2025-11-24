@@ -9,16 +9,18 @@ const scoreCollection = db.collection('score');
 const currentGamesCollection = db.collection('currentGames');
 const waitlistCollection = db.collection('waitlist');
 
-// This will asynchronously test the connection and exit the process if it fails
+// Test connection
 (async function testConnection() {
   try {
     await db.command({ ping: 1 });
-    console.log(`Connect to database`);
+    console.log(`Connected to database`);
   } catch (ex) {
     console.log(`Unable to connect to database with ${url} because ${ex.message}`);
     process.exit(1);
   }
 })();
+
+// ===== USER FUNCTIONS =====
 
 function getUser(email) {
   return userCollection.findOne({ email: email });
@@ -36,16 +38,24 @@ async function updateUser(user) {
   await userCollection.updateOne({ email: user.email }, { $set: user });
 }
 
+// ===== SCORE FUNCTIONS =====
+
 async function updateScoreDB(score) {
-  await scoreCollection.updateOne( { user: score.user }, { $set: score}, { upsert: true } );
+  await scoreCollection.updateOne({ user: score.user }, { $set: score }, { upsert: true });
 }
 
 async function getScore(user) {
-  return scoreCollection.findOne( { user : user} );
+  return scoreCollection.findOne({ user: user });
 }
+
+// ===== GAME FUNCTIONS =====
 
 async function addGame(game) {
   return currentGamesCollection.insertOne(game);
+}
+
+async function getGame(gameID) {
+  return currentGamesCollection.findOne({ gameID: gameID }); // Fixed: use correct collection
 }
 
 async function deleteGame(gameID) {
@@ -54,66 +64,65 @@ async function deleteGame(gameID) {
 }
 
 async function getDeck(gameID) {
-  findgame = await currentGamesCollection.findOne( { gameID : gameID });
-  return findgame.deck;
-}
-async function updateDeck(gameID, newDeck) {
-  await currentGamesCollection.updateOne (
-    { gameID: gameID}, 
-    {$set: {deck: newDeck}}
-  )
+  const game = await currentGamesCollection.findOne({ gameID: gameID });
+  return game ? game.deck : []; // Fixed: handle null case
 }
 
-async function checkWaitlist(user) {
-  // Try to find someone waiting
-  const waitingPlayer = await waitlistCollection.findOneAndDelete(
-    {}, 
+async function updateDeck(gameID, newDeck) {
+  await currentGamesCollection.updateOne(
+    { gameID: gameID },
+    { $set: { deck: newDeck } }
+  );
+}
+
+// Update any field in a game (flexible helper)
+async function updateGame(gameID, updates) {
+  await currentGamesCollection.updateOne(
+    { gameID: gameID },
+    { $set: updates }
+  );
+}
+
+// ===== WAITLIST FUNCTIONS =====
+
+async function addToWaitlist(user) {
+  await waitlistCollection.insertOne({
+    user: user,
+    joinedAt: new Date()
+  });
+}
+
+async function getFirstInWaitlist() {
+  return waitlistCollection.findOneAndDelete(
+    {},
     { sort: { _id: 1 } }
   );
-  
-  if (waitingPlayer) {
-    // Found someone! Create a match
-    const gameID = generateGameID();
-    await matchesCollection.insertOne({
-      gameID: gameID,
-      player1: waitingPlayer.user,
-      player2: user,
-      createdAt: new Date()
-    });
-    
-    return { 
-      matched: true, 
-      opponent: waitingPlayer.user,
-      gameID: gameID 
-    };
-  } else {
-    // No one waiting, add this user
-    await waitlistCollection.insertOne({ 
-      user: user,
-      joinedAt: new Date()
-    });
-    
-    return { matched: false };
-  }
-}
-async function getGame(gameID) {
-  return gamesCollection.findOne({ gameID });
 }
 
-// 
+async function removeFromWaitlist(userEmail) {
+  await waitlistCollection.deleteOne({ 'user.email': userEmail });
+}
+
+// ===== EXPORTS =====
 
 module.exports = {
+  // User
   getUser,
   getUserByToken,
   addUser,
   updateUser,
+  // Score
   updateScoreDB,
-  addGame,
-  getDeck,
-  deleteGame,
   getScore,
-  updateDeck,
-  checkWaitlist,
-  syncToGame, 
+  // Game
+  addGame,
   getGame,
+  deleteGame,
+  getDeck,
+  updateDeck,
+  updateGame,
+  // Waitlist
+  addToWaitlist,
+  getFirstInWaitlist,
+  removeFromWaitlist,
 };

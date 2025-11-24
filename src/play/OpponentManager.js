@@ -99,7 +99,7 @@ export class OpponentManager {
         }
     }
 
-    // ===== Dialogue & Reactions (same as before) =====
+    // ===== Dialogue & Reactions =====
     getDialogue(situation, cardValue = null) {
         const dialogues = {
             ask: [`Do you have any ${cardValue}s?`, `Got any ${cardValue}s?`, `Hand over your ${cardValue}s!`],

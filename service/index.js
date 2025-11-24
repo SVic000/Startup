@@ -5,7 +5,6 @@ const bcrypt = require('bcryptjs');
 const uuid = require('uuid');
 const DB = require('./database.js');
 const http = require('http');
-const { WebSocketServer } = require('ws');
 const { setupWebSocket } = require('./webSocket.js');
 const server = http.createServer(app);
 
@@ -160,16 +159,18 @@ function setAuthCookie(res, authToken) {
 // drawing a card for user in game
 apiRouter.post('/play/draw', verifyAuth, async (req, res) => {
   const user = await findUser('token', req.cookies[authCookieName]);
-  const deck = await DB.getDeck(user.gameID);
+  const gameID = req.body.gameID || user.gameID;  // Use request body first, fallback to user
+  const deck = await DB.getDeck(gameID);
 
-  if (deck.length === 0) {
+  if (!deck || deck.length === 0) {
     return res.send({ Card: -1 });
   }
+
   const randomIndex = Math.floor(Math.random() * deck.length);
   const randomCard = deck[randomIndex];
   deck.splice(randomIndex, 1);
 
-  await DB.updateDeck(user.gameID, deck);
+  await DB.updateDeck(gameID, deck);
 
   res.send({ Card: randomCard });
 });
@@ -188,12 +189,15 @@ apiRouter.get('/play/checkDeck', verifyAuth, async (req, res) => {
 
 // create new game id and tie it to the user and also create a new deck tied to the game id
 apiRouter.post('/play/new', verifyAuth, async(req,res) => {
-  // also put game states associated with the currentGames id
   const user = await findUser('token', req.cookies[authCookieName]);
-
-  if (!user) return res.status(401).send({mes: 'Unauthorized'});
+  
+  if (!user) return res.status(401).send({msg: 'Unauthorized'});
+  
+  // Clean up any stale game first
   if (user.gameID) {
-    return res.status(400).send({ msg: 'User already in a game'});
+    await DB.deleteGame(user.gameID);
+    user.gameID = null;
+    await DB.updateUser(user);
   }
   
   const gameID = uuid.v4();
@@ -201,10 +205,10 @@ apiRouter.post('/play/new', verifyAuth, async(req,res) => {
   
   const game = {
     gameID: gameID,
-    hasStarted: false, // change this someday
+    hasStarted: false,
     whosTurn: 0,
     startingPlayer: Math.floor(Math.random() * 2),
-    gamePhase: null, // modify this too with other endpoint calls?
+    gamePhase: null,
     deck: gameDeck,
     players: { [user.email]: {email: user.email}},
   }
@@ -214,7 +218,7 @@ apiRouter.post('/play/new', verifyAuth, async(req,res) => {
   user.gameID = gameID;
   await DB.updateUser(user);
   res.send({gameID});
-})
+});
 
 // games over, delete it from being tied to the user and to currentGame
 apiRouter.delete('/play/delete', verifyAuth, async (req, res) => {
