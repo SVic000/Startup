@@ -108,6 +108,13 @@ function updateScores(user, newScore) {
   return scores;
 }
 
+// cat update!?
+apiRouter.post('/cat',verifyAuth, async(req,res) => {
+  const user = await findUser('token', req.cookies[authCookieName]);
+  DB.updateUser(user.email, req.body.cat);
+  res.send(req.body.cat)
+})
+
 
 
 // Default error handler
@@ -190,7 +197,7 @@ apiRouter.get('/play/checkDeck', verifyAuth, async (req, res) => {
 // create new game id and tie it to the user and also create a new deck tied to the game id
 apiRouter.post('/play/new', verifyAuth, async(req,res) => {
   const user = await findUser('token', req.cookies[authCookieName]);
-  
+
   if (!user) return res.status(401).send({msg: 'Unauthorized'});
   
   // Clean up any stale game first
