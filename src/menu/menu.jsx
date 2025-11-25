@@ -9,21 +9,22 @@ export function Menu(props) {
   const [playerCat, setPlayerCat] = useState(null); // for if the player wants to change their cat?
   const [catMenu, setCatMenu] = useState(false);
   const [expression, setExpression] = useState('Default');
-  const [iteration, setIteration] = useState(0);
+  const [iteration, setIteration] = useState(0); // cycle through expressions
   const expressions = ["Default", "Shocked", "No", "Annoyed", "GameEnd", "Excited"]
+  const [selectedCat, setSelectedCat] = useState(null); // currently selected
 
   // first make a call to db to check what the players cat face is! 
   // set player cat face to that
-/*
-  React.useEffect(()=> {
-    fetch('api/cat')
-    .then((response) => response.json())
-    .then((data) => {
-      setPlayerCat(data.cat)
-    .catch();
+
+React.useEffect(() => {
+  fetch('/api/cat/get', { method: 'GET', credentials: 'include' })
+    .then(res => res.json())
+    .then(data => {
+      if (data.cat) setSelectedCat(data.cat);
     })
-  }, []);
-  */
+    .catch(err => console.error(err));
+}, []);
+
 
 
   // then when players click a button change the render to the cats (cycling through expressions)
@@ -45,24 +46,17 @@ export function Menu(props) {
       setCatMenu(true);
     }
   };
-
-  function changeExpression() {
-    if(iteration > 6) {
-      setIteration(0);
-    }
-    setExpression(expressions[iteration]);
-    setIteration((prev) => prev + 1)
-  }
-
-      React.useEffect(()=> {
-      if (!catMenu) return; 
-      const interval = setInterval(() => {
-        setIteration(prev => {
-          const next = (prev + 1) % expressions.length;
-          setExpression(expressions[next]);
-          return next;
-        });
-      }, 1000);
+  
+// changes cat expression
+  React.useEffect(()=> {
+  if (!catMenu) return; 
+  const interval = setInterval(() => {
+    setIteration(prev => {
+      const next = (prev + 1) % expressions.length;
+      setExpression(expressions[next]);
+      return next;
+    });
+  }, 1000);
   return () => clearInterval(interval); // cleanup when menu closes
 
      },[catMenu])
@@ -71,17 +65,49 @@ export function Menu(props) {
 
     return (
       <main>
-        <div>
+        <div className="text-center">
           select a cat
           <p> This cat will be how you present to other players!</p>
         </div>
-        <div className = "flex-container">
-          <img id="Frank" width = '200' src={`/Frank${expression}.PNG`} alt={`Frank ${expression} expression`}/>
-          <img id="Darla" width = '200' src={`/Darla${expression}.PNG`} alt={`Darla ${expression} expression`}/>
-          <img id="Mike" width = '200' src={`/Mike${expression}.PNG`} alt={`Mike ${expression} expression`}/>
-          <img id="Ricky" width = '200' src={`/Ricky${expression}.PNG`} alt={`Ricky ${expression} expression`}/>
-        </div>
-        <button> apply </button>
+
+      <div className="cat-container">
+        {["Frank", "Darla", "Mike","Ricky"].map(cat => (
+          <div
+            key={cat}
+            className={`cat-card ${selectedCat === cat ? "selected" : ""}`}
+            onClick={() => setSelectedCat(cat)}
+          >
+            <img
+              className={cat === "Mike" ? "mike-img" : "cat-img"}
+              width="200"
+              src={`/${cat}${expression}.PNG`}
+              alt={`${cat} ${expression} expression`}
+            />
+            <button>{cat}</button>
+          </div>
+        ))}
+      </div>
+
+        <button
+          id="apply"
+          onClick={() => {
+            if (!selectedCat) return;
+            fetch('/api/cat/update', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({ cat: selectedCat }),
+            })
+            .then(res => res.json())
+            .then(data => {
+              console.log("Cat updated to:", data.cat);
+              alert(`Your cat is now ${data.cat}!`);
+            })
+            .catch(err => console.error(err));
+          }}
+        >
+          Apply
+        </button>
         <button onClick={changeMenu}>
           leave the cat menu!
         </button>

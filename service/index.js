@@ -108,12 +108,21 @@ function updateScores(user, newScore) {
   return scores;
 }
 
-// cat update!?
-apiRouter.post('/cat',verifyAuth, async(req,res) => {
+// cat get!!?
+apiRouter.get('/cat/get', verifyAuth, async (req, res) => {
   const user = await findUser('token', req.cookies[authCookieName]);
-  DB.updateUser(user.email, req.body.cat);
-  res.send(req.body.cat)
-})
+  if (!user) return res.status(401).send({ msg: 'Unauthorized' });
+
+  res.send({ cat: user.cat || null });
+});
+
+apiRouter.post('/cat/update', verifyAuth, async(req,res) => {
+  const user = await findUser('token', req.cookies[authCookieName]);
+  // DB.updateUser(user.email, req.body.cat); // needs correction
+  user.cat = req.body.cat;
+  await DB.updateUser(user);
+  res.send({ cat: req.body.cat });
+});
 
 
 
