@@ -136,6 +136,19 @@ async function handleSelectMultiplayer() {
         setMessage(message.msg);
         setGameState('mode_select');
         break;
+
+      case 'turn-change':
+        console.log('🔄 Turn changed by opponent');
+        if (message.newTurn === 'opponent') {
+          // They said it's "opponent" turn, which means YOUR turn
+          setCurrentTurn('player');
+          if (gameState === 'setup') {
+            setMessage('Your turn! Draw 3 cards.');
+          } else {
+            setMessage('Your turn!');
+          }
+        }
+        break;
         
       default:
         console.log('Unknown message type:', message.type);
@@ -166,7 +179,7 @@ async function handleSelectMultiplayer() {
     setGameState('setup');
     setMessage(`Matched with ${opponent.username}! Game starting...`);
     setOpponentName(opponent.username);
-    
+
     setOpponentCatFace(opponent.cat);
     
     const service = new GameService(matchGameID, true);
@@ -265,7 +278,7 @@ async function handleDraw() {
     
     // Notify opponent in multiplayer
     if (gameMode === 'multiplayer' && socket && socket.readyState === 1) {
-      console.log('Notifying opponent of draw');
+      console.log('📤 Notifying opponent of draw');
       socket.send(JSON.stringify({
         type: 'player-action',
         action: 'draw'
@@ -276,9 +289,18 @@ async function handleDraw() {
   if (gameState === 'setup') {
     setDrawCount(prev => prev + 1);
     
-    // After 3rd draw in setup, switch turn to opponent
-    if (playerHand.length + 1 === 3) {
-      console.log('Setup complete for player, switching to opponent');
+    // After 3rd draw in setup, tell opponent it's their turn NOW
+    if (newHand && newHand.length === 3) {
+      console.log('✅ Finished my 3 draws in setup');
+      
+      if (gameMode === 'multiplayer' && socket && socket.readyState === 1) {
+        // Tell opponent: YOUR TURN NOW
+        socket.send(JSON.stringify({
+          type: 'turn-change',
+          newTurn: 'opponent' // From opponent's perspective
+        }));
+      }
+      
       setTimeout(() => {
         setCurrentTurn('opponent');
         setMessage(`${opponentName}'s turn to draw!`);
@@ -531,28 +553,28 @@ function checkOpponentPairs() {
     }, [opponentHand, gameState]);
 
     // set up phase completion
-  useEffect(() => {
-    if (gameState === 'setup' && playerHand.length === 3 && opponentHand.length === 3) {
-      setGameState('main');
-      setMessage("Both players have cards! Time to fish!");
-
-      setCurrentTurn(firstDrawer || 'player');
-    }
-  }, [gameState, playerHand.length, opponentHand.length, firstDrawer]);
-
-  // set up for ai if player goes first!
-  useEffect(() => {
-  if (gameState === 'setup' && 
-      playerHand.length === 3 && 
-      opponentHand.length === 0 && 
-      firstDrawer === 'player' &&
-      gameMode === 'ai' && 
-      gameServiceRef.current) {
-    setMessage("Frank's drawing his cards...");
-    setCurrentTurn('opponent');
-    startOpponentSetupDraw(gameServiceRef.current);
-  }
-}, [gameState, playerHand.length, opponentHand.length, firstDrawer, gameMode]);
+// REPLACE both setup useEffects (lines 543-567) with this single one:
+    useEffect(() => {
+      if (gameState !== 'setup') return;
+      
+      const playerReady = playerHand.length === 3;
+      const opponentReady = opponentHand.length === 3;
+      
+      // Both players have 3 cards → transition to main
+      if (playerReady && opponentReady) {
+        setMessage("Both players have cards! Time to fish!");
+        setGameState('main');
+        setCurrentTurn(firstDrawer || 'player');
+        return;
+      }
+      
+      // AI mode: If player finished drawing first, start AI's setup draw
+      if (gameMode === 'ai' && playerReady && !opponentReady && firstDrawer === 'player' && gameServiceRef.current) {
+        setMessage("Frank's drawing his cards...");
+        setCurrentTurn('opponent');
+        startOpponentSetupDraw(gameServiceRef.current);
+      }
+    }, [gameState, playerHand.length, opponentHand.length, firstDrawer, gameMode]);
   
     // Opponent's turn in main game
     useEffect(() => {

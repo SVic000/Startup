@@ -110,6 +110,13 @@ function setupWebSocket(server, db) {
             action: 'end-turn' 
           });
           break;
+
+        case 'turn-change':
+          sendToOpponent(connInfo.gameID, ws, {
+            type: 'turn-change',
+            newTurn: message.newTurn
+          });
+          break;
           
         case 'game-over':
           sendToOpponent(connInfo.gameID, ws, { 
