@@ -75,9 +75,11 @@ export function Menu(props) {
           select a cat
           <p> This cat will be how you present to other players!</p>
         </div>
-        <div>
-          the expression!
-          <img id="cat" width = '400' src={`/Frank${expression}.PNG`} alt={`${expression} expression`}/>
+        <div className = "flex-container">
+          <img id="Frank" width = '200' src={`/Frank${expression}.PNG`} alt={`${expression} expression`}/>
+          <img id="Darla" width = '200' src={`/Darla${expression}.PNG`} alt={`${expression} expression`}/>
+          <img id="Mike" width = '200' src={`/Mike${expression}.PNG`} alt={`${expression} expression`}/>
+          <img id="Ricky" width = '200' src={`/Ricky${expression}.PNG`} alt={`${expression} expression`}/>
         </div>
         <button> apply </button>
         <button onClick={changeMenu}>
