@@ -41,7 +41,7 @@ export function Play() {
   const [goFishContext, setGoFishContext] = useState(null); // Whether the go fish is for you or them 
   const [message, setMessage] = useState(''); // guides player
   const [opponentWords, setOpponentWords] = useState(''); // Hard coded opponent words
-  const [opponentCatFace, setopponentCatFace] = useState('Frank') // go to db and see what people have picked!
+  const [opponentCatFace, setOpponentCatFace] = useState('Frank') // go to db and see what people have picked!
   const [catFace, setcatFace] = useState('Default') // Default | No | Shocked | Annoyed | Excited | GameEnd
 
   // ========= Mode selection handlers ===========
@@ -99,12 +99,11 @@ async function handleSelectMultiplayer() {
   
   newSocket.onmessage = (event) => {
     const message = JSON.parse(event.data);
-    
-    // When we get 'connected' from server, THEN send join-queue
+  
     if (message.type === 'connected' && !hasReceivedConnected) {
       hasReceivedConnected = true;
       newSocket.send(JSON.stringify({ type: 'join-queue' }));
-      return; // Don't process 'connected' in the switch
+      return;
     }
     
     switch (message.type) {
@@ -167,6 +166,8 @@ async function handleSelectMultiplayer() {
     setGameState('setup');
     setMessage(`Matched with ${opponent.username}! Game starting...`);
     setOpponentName(opponent.username);
+    
+    setOpponentCatFace(opponent.cat);
     
     const service = new GameService(matchGameID, true);
     gameServiceRef.current = service;

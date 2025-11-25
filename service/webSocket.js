@@ -30,7 +30,7 @@ function setupWebSocket(server, db) {
 
   // ===== ONE CONNECTION HANDLER =====
   wss.on('connection', async (ws, req) => {
-    console.log('🔌 Player connected');
+    console.log('Player connected');
     
     // Get user from auth cookie
     const cookies = req.headers.cookie;
@@ -39,7 +39,7 @@ function setupWebSocket(server, db) {
     
     if (token) {
       user = await db.getUserByToken(token);
-      console.log('👤 User found:', user ? user.email : 'null');
+      console.log('User found:', user ? user.email : 'null');
     }
     
     // Store connection
@@ -47,28 +47,16 @@ function setupWebSocket(server, db) {
     
     ws.send(JSON.stringify({ type: 'connected' }));
 
-    ws.on('message', async (data) => {
-  console.log('🎉🎉🎉 MESSAGE HANDLER TRIGGERED! 🎉🎉🎉');
-  console.log('📨 Backend received raw message:', data.toString());
-  const message = JSON.parse(data);
-  console.log('📨 Backend parsed message:', message);
-  const connInfo = connections.get(ws);
-  
-  switch (message.type) {
-    // ...
-  }
-});
-
     // ===== HANDLE MESSAGES =====
     ws.on('message', async (data) => {
-      console.log('📨 Backend received raw message:', data.toString());
+      console.log('Backend received raw message:', data.toString());
       const message = JSON.parse(data);
-      console.log('📨 Backend parsed message:', message);
+      console.log('Backend parsed message:', message);
       const connInfo = connections.get(ws);
       
       switch (message.type) {
         case 'join-queue':
-          console.log('🎯 Processing join-queue...');
+          console.log('Processing join-queue...');
           await handleJoinQueue(ws, connInfo);
           break;
         
@@ -132,7 +120,7 @@ function setupWebSocket(server, db) {
           break;
           
         default:
-          console.log('❓ Unknown message type:', message.type);
+          console.log('Unknown message type:', message.type);
       }
     });
 
@@ -160,16 +148,16 @@ function setupWebSocket(server, db) {
       console.log('handleJoinQueue called, user:', connInfo?.user?.email);
       
       if (!connInfo.user) {
-        console.log('❌ User not authenticated');
+        console.log('User not authenticated');
         ws.send(JSON.stringify({ type: 'error', msg: 'Not authenticated' }));
         return;
       }
       
-      console.log('✅ Sending queue-joined message');
+      console.log('Sending queue-joined message');
       ws.send(JSON.stringify({ type: 'queue-joined' }));
       
       if (waitingPlayers.size > 0) {
-        console.log('🎮 Match found! Pairing players...');
+        console.log('Match found! Pairing players...');
         // Someone is waiting! Create a match
         const [waitingId, waitingData] = waitingPlayers.entries().next().value;
         waitingPlayers.delete(waitingId);
@@ -207,14 +195,14 @@ function setupWebSocket(server, db) {
         // Notify player 1 (waiting player)
         waitingData.ws.send(JSON.stringify({
           type: 'match-found',
-          opponent: { username: connInfo.user.email },
+          opponent: { username: connInfo.user.email, cat: connInfo.user.cat || "Frank" },
           gameID: gameID
         }));
         
         // Notify player 2 (current player)
         ws.send(JSON.stringify({
           type: 'match-found',
-          opponent: { username: waitingData.user.email },
+          opponent: { username: waitingData.user.email, cat: waitingData.user.cat || "Frank" },
           gameID: gameID
         }));
         
@@ -231,7 +219,7 @@ function setupWebSocket(server, db) {
         }, 1000);
         
       } else {
-        console.log('⏳ No waiting players, adding to queue');
+        console.log('No waiting players, adding to queue');
         // No one waiting, add to queue
         const queueId = generateGameID();
         waitingPlayers.set(queueId, { ws, user: connInfo.user });

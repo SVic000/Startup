@@ -116,9 +116,9 @@ apiRouter.get('/cat/get', verifyAuth, async (req, res) => {
   res.send({ cat: user.cat || null });
 });
 
+// update cat!
 apiRouter.post('/cat/update', verifyAuth, async(req,res) => {
   const user = await findUser('token', req.cookies[authCookieName]);
-  // DB.updateUser(user.email, req.body.cat); // needs correction
   user.cat = req.body.cat;
   await DB.updateUser(user);
   res.send({ cat: req.body.cat });
