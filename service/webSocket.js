@@ -6,6 +6,7 @@ function setupWebSocket(server, db) {
   // Track connections and queue
   const waitingPlayers = new Map();
   const connections = new Map();
+  const gameWebSockets = new Map();
 
   // Helper to parse cookies
   function parseCookie(cookieString, name) {
@@ -65,12 +66,30 @@ function setupWebSocket(server, db) {
             if (value.ws === ws) waitingPlayers.delete(key);
           });
           break;
+        case 'request-turn-change':
+          // Player requests to end their turn
+          await handleTurnChange(connInfo.gameID, connInfo.playerRole);
+          break;
         
         case 'player-action':
+          const game = await db.getGame(connInfo.gameID);
+          const isTheirTurn = (connInfo.playerRole === game.currentTurn);
+        
+          if (!isTheirTurn && message.action !== 'give-card' && message.action !== 'go-fish-response') {
+            // Only allow defensive actions (responding to questions)
+            ws.send(JSON.stringify({ 
+              type: 'error', 
+              msg: 'Not your turn!' 
+            }));
+            return;
+          }
+
           sendToOpponent(connInfo.gameID, ws, {
             type: 'opponent-action',
             action: message.action,
-            ...message.data
+            cardAsked: message.cardAsked,
+            cardValue: message.cardValue,
+            count: message.count
           });
           break;
           
@@ -131,6 +150,38 @@ function setupWebSocket(server, db) {
       }
     });
 
+    // helper change turn function:
+    async function handleTurnChange(gameID, currentPlayerRole) {
+      const game = await db.getGame(gameID);
+      if (!game) return;
+      
+      // Switch turns
+      const newTurn = currentPlayerRole === 'player1' ? 'player2' : 'player1';
+      await db.updateGame(gameID, { currentTurn: newTurn });
+      
+      // Get WebSockets from memory
+      const sockets = gameWebSockets.get(gameID);
+      if (!sockets) return;
+      
+      const player1WS = sockets.player1;
+      const player2WS = sockets.player2;
+      
+      if (player1WS && player1WS.readyState === 1) {
+        player1WS.send(JSON.stringify({
+          type: 'turn-update',
+          yourTurn: newTurn === 'player1'
+        }));
+      }
+      
+      if (player2WS && player2WS.readyState === 1) {
+        player2WS.send(JSON.stringify({
+          type: 'turn-update',
+          yourTurn: newTurn === 'player2'
+        }));
+      }
+    }
+    
+
     // ===== DISCONNECT =====
     ws.on('close', async () => {
       console.log('Player disconnected');
@@ -151,95 +202,103 @@ function setupWebSocket(server, db) {
     });
 
     // ===== HELPER: JOIN QUEUE =====
-    async function handleJoinQueue(ws, connInfo) {
-      console.log('handleJoinQueue called, user:', connInfo?.user?.email);
-      
-      if (!connInfo.user) {
-        console.log('User not authenticated');
-        ws.send(JSON.stringify({ type: 'error', msg: 'Not authenticated' }));
-        return;
+// ===== HELPER: JOIN QUEUE =====
+async function handleJoinQueue(ws, connInfo) {
+  console.log('handleJoinQueue called, user:', connInfo?.user?.email);
+  
+  if (!connInfo.user) {
+    console.log('❌ User not authenticated');
+    ws.send(JSON.stringify({ type: 'error', msg: 'Not authenticated' }));
+    return;
+  }
+  
+  console.log('Sending queue-joined message');
+  ws.send(JSON.stringify({ type: 'queue-joined' }));
+  
+  if (waitingPlayers.size > 0) {
+    console.log('Match found! Pairing players...');
+    const [waitingId, waitingData] = waitingPlayers.entries().next().value;
+    waitingPlayers.delete(waitingId);
+    
+    const gameID = generateGameID();
+    const gameDeck = [1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9];
+    const starterIsPlayer1 = Math.random() < 0.5;
+    
+    const game = {
+      gameID: gameID,
+      isMultiplayer: true,
+      hasStarted: true,
+      currentTurn: starterIsPlayer1 ? 'player1' : 'player2',
+      gamePhase: 'setup',
+      deck: gameDeck,
+      players: {
+        player1: { email: waitingData.user.email },
+        player2: { email: connInfo.user.email }    
       }
-      
-      console.log('Sending queue-joined message');
-      ws.send(JSON.stringify({ type: 'queue-joined' }));
-      
-      if (waitingPlayers.size > 0) {
-        console.log('Match found! Pairing players...');
-        // Someone is waiting! Create a match
-        const [waitingId, waitingData] = waitingPlayers.entries().next().value;
-        waitingPlayers.delete(waitingId);
-        
-        // Create shared game in database
-        const gameID = generateGameID();
-        const gameDeck = [1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9];
-        const starterIsPlayer1 = Math.random() < 0.5;
-        
-        const game = {
-          gameID: gameID,
-          isMultiplayer: true,
-          hasStarted: true,
-          whosTurn: starterIsPlayer1 ? 0 : 1,
-          gamePhase: 'setup',
-          deck: gameDeck,
-          players: {
-            player1: { email: waitingData.user.email },
-            player2: { email: connInfo.user.email }
-          }
-        };
-        
-        await db.addGame(game);
-        
-        // Link both users to this game
-        waitingData.user.gameID = gameID;
-        connInfo.user.gameID = gameID;
-        await db.updateUser(waitingData.user);
-        await db.updateUser(connInfo.user);
-        
-        // Update connection info
-        connections.get(waitingData.ws).gameID = gameID;
-        connections.get(ws).gameID = gameID;
-        
-        // Notify player 1 (waiting player)
-        waitingData.ws.send(JSON.stringify({
-          type: 'match-found',
-          opponent: { username: connInfo.user.email, cat: connInfo.user.cat || "Frank" },
-          gameID: gameID
-        }));
-        
-        // Notify player 2 (current player)
-        ws.send(JSON.stringify({
-          type: 'match-found',
-          opponent: { username: waitingData.user.email, cat: waitingData.user.cat || "Frank" },
-          gameID: gameID
-        }));
-        
-        // Tell them who starts (after short delay)
-        setTimeout(() => {
-          waitingData.ws.send(JSON.stringify({ 
-            type: 'game-start', 
-            yourTurn: starterIsPlayer1 
-          }));
-          ws.send(JSON.stringify({ 
-            type: 'game-start', 
-            yourTurn: !starterIsPlayer1 
-          }));
-        }, 1000);
-        
-      } else {
-        console.log('No waiting players, adding to queue');
-        // No one waiting, add to queue
-        const queueId = generateGameID();
-        waitingPlayers.set(queueId, { ws, user: connInfo.user });
-      }
-    }
+    };
 
+    await db.addGame(game);
+
+    gameWebSockets.set(gameID, {
+      player1: waitingData.ws,
+      player2: ws
+    });
+    
+    // Link both users to this game
+    waitingData.user.gameID = gameID;
+    connInfo.user.gameID = gameID;
+    await db.updateUser(waitingData.user);
+    await db.updateUser(connInfo.user);
+    
+    // Update connection info
+    connections.get(waitingData.ws).gameID = gameID;
+    connections.get(waitingData.ws).playerRole = 'player1';
+    connections.get(ws).gameID = gameID;
+    connections.get(ws).playerRole = 'player2';
+    
+    // Notify both players
+    waitingData.ws.send(JSON.stringify({
+      type: 'match-found',
+      opponent: { username: connInfo.user.email, cat: connInfo.user.cat || "Frank" },
+      gameID: gameID
+    }));
+    
+    ws.send(JSON.stringify({
+      type: 'match-found',
+      opponent: { username: waitingData.user.email, cat: waitingData.user.cat || "Frank" },
+      gameID: gameID
+    }));
+    
+    // Tell them who starts
+    setTimeout(() => {
+      waitingData.ws.send(JSON.stringify({ 
+        type: 'game-start', 
+        yourTurn: starterIsPlayer1,
+        gamePhase: 'setup'
+      }));
+      ws.send(JSON.stringify({ 
+        type: 'game-start', 
+        yourTurn: !starterIsPlayer1,
+        gamePhase: 'setup'
+      }));
+    }, 1000);
+    
+  } else {
+    console.log('⏳ No waiting players, adding to queue');
+    const queueId = generateGameID();
+    waitingPlayers.set(queueId, { ws, user: connInfo.user });
+  }
+}
     // ===== HELPER: CLEANUP GAME =====
     async function cleanupGame(gameID) {
       if (!gameID) return;
       
       try {
         const game = await db.getGame(gameID);
+        
         if (!game) return;
+        
+        gameWebSockets.delete(gameID);
         
         // Unlink both players
         if (game.players?.player1?.email) {
