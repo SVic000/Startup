@@ -75,6 +75,14 @@ function setupWebSocket(server, db) {
           const game = await db.getGame(connInfo.gameID);
           const isTheirTurn = (connInfo.playerRole === game.currentTurn);
         
+            if (!isTheirTurn && message.action === 'ask') {
+              ws.send(JSON.stringify({ 
+                type: 'error', 
+                msg: 'Not your turn to ask!' 
+              }));
+              return;
+            }
+            
           if (!isTheirTurn && message.action !== 'give-card' && message.action !== 'go-fish-response') {
             // Only allow defensive actions (responding to questions)
             ws.send(JSON.stringify({ 
@@ -151,35 +159,35 @@ function setupWebSocket(server, db) {
     });
 
     // helper change turn function:
-    async function handleTurnChange(gameID, currentPlayerRole) {
-      const game = await db.getGame(gameID);
-      if (!game) return;
-      
-      // Switch turns
-      const newTurn = currentPlayerRole === 'player1' ? 'player2' : 'player1';
-      await db.updateGame(gameID, { currentTurn: newTurn });
-      
-      // Get WebSockets from memory
-      const sockets = gameWebSockets.get(gameID);
-      if (!sockets) return;
-      
-      const player1WS = sockets.player1;
-      const player2WS = sockets.player2;
-      
-      if (player1WS && player1WS.readyState === 1) {
-        player1WS.send(JSON.stringify({
-          type: 'turn-update',
-          yourTurn: newTurn === 'player1'
-        }));
-      }
-      
-      if (player2WS && player2WS.readyState === 1) {
-        player2WS.send(JSON.stringify({
-          type: 'turn-update',
-          yourTurn: newTurn === 'player2'
-        }));
-      }
+  async function handleTurnChange(gameID, currentPlayerRole) {
+    const game = await db.getGame(gameID);
+    if (!game) return;
+    
+    // Switch turns
+    const newTurn = currentPlayerRole === 'player1' ? 'player2' : 'player1';
+    await db.updateGame(gameID, { currentTurn: newTurn });
+    
+    // Get WebSockets from memory
+    const sockets = gameWebSockets.get(gameID);
+    if (!sockets) return;
+    
+    const player1WS = sockets.player1;
+    const player2WS = sockets.player2;
+    
+    if (player1WS && player1WS.readyState === 1) {
+      player1WS.send(JSON.stringify({
+        type: 'turn-update',
+        yourTurn: newTurn === 'player1'
+      }));
     }
+    
+    if (player2WS && player2WS.readyState === 1) {
+      player2WS.send(JSON.stringify({
+        type: 'turn-update',
+        yourTurn: newTurn === 'player2'
+      }));
+    }
+  }
     
 
     // ===== DISCONNECT =====
@@ -295,10 +303,7 @@ async function handleJoinQueue(ws, connInfo) {
       
       try {
         const game = await db.getGame(gameID);
-        
         if (!game) return;
-        
-        gameWebSockets.delete(gameID);
         
         // Unlink both players
         if (game.players?.player1?.email) {
