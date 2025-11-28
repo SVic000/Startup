@@ -67,6 +67,7 @@ function setupWebSocket(server, db) {
             if (value.ws === ws) waitingPlayers.delete(key);
           });
           break;
+
         case 'request-turn-change':
           // Player requests to end their turn
           await handleTurnChange(connInfo.gameID, connInfo.playerRole);
@@ -119,7 +120,7 @@ function setupWebSocket(server, db) {
                 cardValue: message.cardValue,
                 count: message.count
               });
-              break; // Exit early - drawing is always allowed
+              break;
   }
         
             if (!isTheirTurn && message.action === 'ask') {
@@ -170,6 +171,12 @@ function setupWebSocket(server, db) {
             cardGiven: message.cardValue 
           });
           break;
+        
+        case 'i-made-pair':
+          sendToOpponent(connInfo.gameID, ws, {
+            type: 'made-pair'
+          });
+          break;
           
         case 'go-fish':
           sendToOpponent(connInfo.gameID, ws, { 
@@ -200,9 +207,6 @@ function setupWebSocket(server, db) {
 
     // helper change turn function:
   async function handleTurnChange(gameID, currentPlayerRole) {
-    console.log('🔄 ========== BACKEND TURN CHANGE ==========');
-    console.log('🔄 GameID:', gameID);
-    console.log('🔄 Current player role requesting change:', currentPlayerRole);
     const game = await db.getGame(gameID);
     if (!game) return;
 
@@ -211,9 +215,6 @@ function setupWebSocket(server, db) {
     // Switch turns
     const newTurn = currentPlayerRole === 'player1' ? 'player2' : 'player1';
     await db.updateGame(gameID, { currentTurn: newTurn });
-
-    console.log('🔄 New turn in DB AFTER:', newTurn);
-    console.log('🔄 ==========================================');
     
     // Get WebSockets from memory
     const sockets = gameWebSockets.get(gameID);
