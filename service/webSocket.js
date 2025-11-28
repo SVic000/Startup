@@ -7,6 +7,7 @@ function setupWebSocket(server, db) {
   const waitingPlayers = new Map();
   const connections = new Map();
   const gameWebSockets = new Map();
+  const gameSetupStatus = new Map();
 
   // Helper to parse cookies
   function parseCookie(cookieString, name) {
@@ -71,9 +72,55 @@ function setupWebSocket(server, db) {
           await handleTurnChange(connInfo.gameID, connInfo.playerRole);
           break;
         
+        case 'setup-complete':
+          const gameID = connInfo.gameID;
+          const role = connInfo.playerRole;
+
+          if(!gameSetupStatus.has(gameID)) {
+            gameSetupStatus.set(gameID, {player1Ready: false, player2Ready: false});
+          }
+
+          const status = gameSetupStatus.get(gameID);
+          status[`${role}Ready`] = true;
+
+          // Notify other player that they're done
+          sendToOpponent(gameID, ws, {
+            type: 'opponent-setup-complete',
+          });
+
+          //if both ready, start main game
+          if (status.player1Ready && status.player2Ready) {
+            const game = await db.getGame(gameID);
+            const sockets = gameWebSockets.get(gameID);
+
+            sockets.player1.send(JSON.stringify({
+              type: 'setup-finished',
+              yourTurn: game.currentTurn === 'player1'
+            }));
+
+            sockets.player2.send(JSON.stringify({
+              type: 'setup-finished',
+              yourTurn: game.currentTurn === 'player2'
+            }));
+
+            gameSetupStatus.delete(gameID);
+          }
+        break;
+        
         case 'player-action':
           const game = await db.getGame(connInfo.gameID);
           const isTheirTurn = (connInfo.playerRole === game.currentTurn);
+
+            if (message.action === 'draw') {
+              sendToOpponent(connInfo.gameID, ws, {
+                type: 'opponent-action',
+                action: message.action,
+                cardAsked: message.cardAsked,
+                cardValue: message.cardValue,
+                count: message.count
+              });
+              break; // Exit early - drawing is always allowed
+  }
         
             if (!isTheirTurn && message.action === 'ask') {
               ws.send(JSON.stringify({ 
@@ -82,9 +129,9 @@ function setupWebSocket(server, db) {
               }));
               return;
             }
-            
+
           if (!isTheirTurn && message.action !== 'give-card' && message.action !== 'go-fish-response') {
-            // Only allow defensive actions (responding to questions)
+            // Only allow defensive actions
             ws.send(JSON.stringify({ 
               type: 'error', 
               msg: 'Not your turn!' 
@@ -137,13 +184,6 @@ function setupWebSocket(server, db) {
             action: 'end-turn' 
           });
           break;
-
-        case 'turn-change':
-          sendToOpponent(connInfo.gameID, ws, {
-            type: 'turn-change',
-            newTurn: message.newTurn
-          });
-          break;
           
         case 'game-over':
           sendToOpponent(connInfo.gameID, ws, { 
@@ -160,12 +200,20 @@ function setupWebSocket(server, db) {
 
     // helper change turn function:
   async function handleTurnChange(gameID, currentPlayerRole) {
+    console.log('🔄 ========== BACKEND TURN CHANGE ==========');
+    console.log('🔄 GameID:', gameID);
+    console.log('🔄 Current player role requesting change:', currentPlayerRole);
     const game = await db.getGame(gameID);
     if (!game) return;
+
+    console.log('🔄 Current turn in DB BEFORE:', game.currentTurn);
     
     // Switch turns
     const newTurn = currentPlayerRole === 'player1' ? 'player2' : 'player1';
     await db.updateGame(gameID, { currentTurn: newTurn });
+
+    console.log('🔄 New turn in DB AFTER:', newTurn);
+    console.log('🔄 ==========================================');
     
     // Get WebSockets from memory
     const sockets = gameWebSockets.get(gameID);

@@ -16,8 +16,8 @@ export function Play() {
   const gameServiceRef = useRef(null);
   const [opponentManager, setOpponentManager] = useState(null);
   const [gameID, setGameID] = useState(null);
-  const [opponentName, setOpponentName] = useState('Frank');
   const [socket, setSocket] = useState(null); // websocket!
+  const socketRef = useRef(null);
 
   // ====== Game State =======
   const [current_turn, setCurrentTurn] = useState(null); // player | opponent
@@ -39,9 +39,11 @@ export function Play() {
 
   // ====== UI States ========
   const [selectedCards, setSelectedCards] = useState([]); // which cards the player is selecting
+  const opponentName = useRef('Frank');
   const [selectedCardForAsk, setSelectedCardForAsk] = useState(null); // just one card selected, you can ask a question on that card
   const [opponentQuestion, setOpponentQuestion] = useState(null); // what Ai/Opponent is asking player 
   const [goFishContext, setGoFishContext] = useState(null); // Whether the go fish is for you or them 
+  const goFishContextRef = useRef(null);
   const [message, setMessage] = useState(''); // guides player
   const [opponentWords, setOpponentWords] = useState(''); // Hard coded opponent words
   const [opponentCatFace, setOpponentCatFace] = useState('Frank') // go to db and see what people have picked!
@@ -76,7 +78,7 @@ async function handleSelectAI() {
     setCurrentTurn('player');
     setFirstDrawer('player');
   } else {
-    setMessage(`${opponentName} starts! He's drawing 3 cards!`);
+    setMessage(`${opponentName.current} starts! He's drawing 3 cards!`);
     setCurrentTurn('opponent');
     setFirstDrawer('opponent');
     startOpponentSetupDraw(service, () => {
@@ -94,6 +96,7 @@ async function handleSelectMultiplayer() {
   
   const newSocket = new WebSocket(wsUrl);
   setSocket(newSocket);
+  socketRef.current = newSocket;
   
   let hasReceivedConnected = false;
   
@@ -118,7 +121,7 @@ async function handleSelectMultiplayer() {
         break;
         
       case 'match-found':
-        startMultiplayerGame(message.opponent, message.gameID, newSocket);
+        startMultiplayerGame(message.opponent, message.gameID);
         break;
         
       case 'game-start':
@@ -127,10 +130,21 @@ async function handleSelectMultiplayer() {
           setCurrentTurn('player');
           setFirstDrawer('player');
         } else {
-          setMessage("Opponent starts! They're drawing cards...");
-          requestTurnChange();
+          setMessage(`${opponentName.current} starts! They're drawing cards...`);
+          setCurrentTurn('opponent');
           setFirstDrawer('opponent');
         }
+        break;
+
+      case 'opponent-setup-complete':
+        setOpponentSetup(true);
+        break;
+      
+      case 'setup-finished':
+        // both players ready! switch to main and start!
+        setGameState('main');
+        setCurrentTurn(message.yourturn ? 'player' : 'opponent');
+        setMessage(message.yourturn ? 'player' : 'opponent');
         break;
 
       case 'opponent-action':
@@ -144,12 +158,11 @@ async function handleSelectMultiplayer() {
         break;
 
       case 'turn-update':
-        console.log('🔄 Turn update from server:', message.yourTurn);
         setCurrentTurn(message.yourTurn ? 'player' : 'opponent');
         if (message.yourTurn) {
           setMessage('Your turn!');
         } else {
-          setMessage(`${opponentName}'s turn...`);
+          setMessage(`${opponentName.current}'s turn...`);
         }
         break;
         
@@ -177,35 +190,40 @@ async function handleSelectMultiplayer() {
   setGameState('mode_select');
   setMessage('Choose your opponent!');
 }
-
 useEffect(()=> {
-  console.log(opponentHand)})
+  console.log(goFishContextRef.current);
+})
 
   function startMultiplayerGame(opponent, matchGameID) {
     setGameState('setup');
     setMessage(`Matched with ${opponent.username}! Game starting...`);
 
     setOpponentCatFace(opponent.cat);
+    opponentName.current = opponent.username;
     
     const service = new GameService(matchGameID, true);
     gameServiceRef.current = service;
     setGameID(matchGameID);
     setGameService(service);
-    setOpponentManager(new OpponentManager('human', service, socket));
-    setOpponentName(opponent.username);
+    setOpponentManager(new OpponentManager('human', service, null));
   }
   
   function requestTurnChange() {
+
+      console.log('📤 ========== REQUESTING TURN CHANGE ==========');
+      console.log('📤 Game mode:', gameMode);
+      console.log('📤 Current turn BEFORE request:', current_turn);
+      console.log('📤 Socket state:', socket?.readyState);
+      console.log('📤 ============================================');
     if (gameMode === 'multiplayer' && socket && socket.readyState === 1) {
       socket.send(JSON.stringify({
         type: 'request-turn-change'
       }));
     } else {
-      // AI mode: change locally
+      // Frank change locally
       setCurrentTurn('opponent');
     }
   }
-
 function handleOpponentActionDraw() {
     setOpponentHand(prev => [...prev, 'hidden']);
   
@@ -217,75 +235,88 @@ function handleOpponentActionDraw() {
       }, 500);
     }
 }
-function handleOpponentActionAsk() {
-      setOpponentQuestion(message.cardAsked);
-      setMessage(`${opponentName} asks: Do you have any ${message.cardAsked}s?`);
+function handleOpponentActionAsk(actionmessage) {
+      setOpponentQuestion(actionmessage.cardAsked);
+      setMessage(`${opponentName.current} wants to know if you have any ${actionmessage.cardAsked}s?`);
+      //setOpponentWords(opponentManager.getDialogue('ask', actionmessage.cardAsked))
       setAskedQuestion(1);
       
       // Add dialogue
-      if (opponentManager) {
-        setOpponentWords(opponentManager.getDialogue('ask', message.cardAsked));
-      }
       setcatFace('Default');
       
-      const hasCard = playerHand.includes(message.cardAsked);
+      const hasCard = playerHand.includes(actionmessage.cardAsked);
       
       if (hasCard) {
         setTimeout(() => {
-          setMessage(`Click your ${message.cardAsked} to give it to ${opponentName}`);
+          setMessage(`Click your ${actionmessage.cardAsked} to give it to ${opponentName.current}`);
         }, 1000);
       } else {
         setTimeout(() => {
           setGoFishContext('opponent-ask');
+          goFishContextRef.current = ('opponent-ask');
         }, 1500);
       }
 }
-function handleOpponentActionGiveCard() {
-      const cardReceived = message.cardValue;
-      const count = message.count || 1;
+
+function handleOpponentActionGiveCard(actionmessage) {
+      const cardReceived = actionmessage.cardValue;
+      const count = actionmessage.count || 1;
       
       setPlayerHand(prev => [...prev, ...Array(count).fill(cardReceived)]);
       setOpponentHand(prev => prev.slice(count));
       
-      setMessage(`${opponentName} gave you ${count} ${cardReceived}(s)!`);
+      setMessage(`${opponentName.current} gave you ${count} ${cardReceived}(s)!`);
       
       // Add dialogue - they're sad about losing cards
-      if (opponentManager) {
-        setOpponentWords(opponentManager.getDialogue('lost_card', cardReceived));
-      }
+      setOpponentWords(opponentManager.getDialogue('lost_card', cardReceived));
       setcatFace('Annoyed');
       
       setSelectedCardForAsk(null);
       setAskedQuestion(0);
       setGoFishContext(null);
+      goFishContextRef.current = null;
       
       setTimeout(() => {
         setMessage('Select a card to ask or make pairs!');
         setcatFace('Default');
       }, 1500);
 }
+  function handleOpponentActionGoFishResponse() {
+    console.log('🎣 Opponent told me to go fish! I need to draw.');
+    console.log(gameMode);
 
-function handleOpponentActionGoFishResponse() {
-  setMessage(`${opponentName} says: Go Fish! Drawing a card...`);
-  
-  if (opponentManager) {
-    setOpponentWords(opponentManager.getDialogue('no_card', selectedCardForAsk));
-  }
-  setcatFace('No');
-  setSelectedCardForAsk(null);
-  
-  // Multiplayer: Draw and wait for server confirmation
-  handleDraw().then(() => {
+    setMessage(`${opponentName.current} says: Go Fish! Draw a card!`);
+    
+    
+    //setOpponentWords(opponentManager.getDialogue('no_card', selectedCardForAsk));
+    setcatFace('No');
+    setSelectedCardForAsk(null);
+    // DON'T reset askedQuestion yet - you still have your turn!
+    
+    // In multiplayer, add a hidden card to show opponent drew
+    if (gameMode === 'multiplayer') {
+      setOpponentHand(prev => [...prev, 'hidden']);
+      console.log("in here!");
+      // Set context to show the "Draw a Fish!" button for YOU (the asker)
+      setGoFishContext('player-ask'); // ✅ This makes YOUR draw button appear!
+      goFishContextRef.current = "player-ask";
+      
+    } else {
+      // AI mode: draw for opponent
+      opponentDraw();
+    }
+    
     setTimeout(() => {
-      setAskedQuestion(0);
-      setMessage(`${opponentName}'s turn!`);
       setcatFace('Default');
       setOpponentWords('');
-      // Server will send 'turn-update' to confirm
-    }, 800);
-  });
-
-}
+      
+      if (gameMode === 'ai') {
+        setAskedQuestion(0);
+        setCurrentTurn('player');
+        setMessage('Your turn!');
+      }
+    }, 1500);
+  }
 
 function handleOpponentAction(message) {
   switch (message.action) {
@@ -294,11 +325,11 @@ function handleOpponentAction(message) {
       break;
 
     case 'ask':
-      handleOpponentActionAsk();
+      handleOpponentActionAsk(message);
       break;
       
     case 'give-card':
-      handleOpponentActionGiveCard();
+      handleOpponentActionGiveCard(message);
       break;
         
     case 'go-fish-response':
@@ -311,6 +342,7 @@ function handleOpponentAction(message) {
 }
 
   // ===== SETUP PHASE =====  
+  // for frank
 function startOpponentSetupDraw(service, onComplete) {
   let draws = 0;
   async function drawLoop() {
@@ -327,6 +359,7 @@ function startOpponentSetupDraw(service, onComplete) {
   drawLoop();
 }
 
+// also for frank
 async function opponentDrawWithService(service) {
   if (!service) return;
 
@@ -340,62 +373,62 @@ async function opponentDrawWithService(service) {
   }
 }
   
-async function handleDraw() {
-  const service = gameServiceRef.current;
-  if (!availDeck || !service) return;
+  async function handleDraw() {
+    const service = gameServiceRef.current;
+    if (!availDeck || !service) return;
 
-  const currentHand = playerHandRef.current;
-  const { newHand, deckEmpty } = await service.draw(currentHand);
-  
-  if (newHand) {
-    playerHandRef.current = newHand;
-    setPlayerHand(newHand);
-    setAvailDeck(!deckEmpty);
+    const currentHand = playerHandRef.current;
+    const { newHand, deckEmpty } = await service.draw(currentHand);
     
-    // Notify opponent in multiplayer
-    if (gameMode === 'multiplayer' && socket && socket.readyState === 1) {
-      console.log('📤 Notifying opponent of draw');
-      socket.send(JSON.stringify({
-        type: 'player-action',
-        action: 'draw'
-      }));
-    }
-  }
-
-  if (gameState === 'setup' && playerHandRef.current.length !== 3) {
-    setDrawCount(prev => prev + 1);
-    
-    // After 3rd draw in setup, tell opponent it's their turn NOW
-    if (newHand && newHand.length === 3) {
-      console.log('✅ Finished my 3 draws in setup');
-      setPlayerSetup(true);
+    if (newHand) {
+      playerHandRef.current = newHand;
+      setPlayerHand(newHand);
+      setAvailDeck(!deckEmpty);
       
+      // Notify opponent in multiplayer
       if (gameMode === 'multiplayer' && socket && socket.readyState === 1) {
-        // Tell opponent: YOUR TURN NOW
+        console.log('📤 Notifying opponent of draw');
         socket.send(JSON.stringify({
-          type: 'request-turn-change',
-          newTurn: 'opponent' // From opponent's perspective
+          type: 'player-action',
+          action: 'draw'
         }));
       }
+      
+      // CHECK IF SETUP IS COMPLETE
+      if (gameState === 'setup' && newHand.length === 3) {
+        console.log('✅ Finished my 3 draws in setup');
+        setPlayerSetup(true);
+        
+        if (gameMode === 'multiplayer' && socket && socket.readyState === 1) {
+          socket.send(JSON.stringify({
+            type: 'setup-complete'
+          }));
+          requestTurnChange();
+        }
+      }
     }
-  } else {
-    setDrawCount(1);
-  }
 
-  if (goFishContext === 'player-ask') {
-    setSelectedCardForAsk(null);
-    setGoFishContext(null);
-    setAskedQuestion(0);
-    
-    if (gameMode === 'multiplayer') {
-      requestTurnChange();
+    // Only increment draw count if still setting up and haven't reached 3 yet
+    if (gameState === 'setup' && playerHandRef.current.length < 3) {
+      setDrawCount(prev => prev + 1);
     } else {
-      setCurrentTurn('opponent');
+      setDrawCount(1);
     }
-    
-    setMessage(`${opponentName}'s turn...`);
+
+    // Handle go fish contexts
+    if (goFishContextRef.current === 'player-ask') {
+      setSelectedCardForAsk(null);
+      setGoFishContext(null);
+      goFishContextRef.current = null;
+      
+      if (gameMode === 'multiplayer') {
+        setMessage('Card drawn! Make pairs, then end your turn.');
+      } else {
+        setCurrentTurn('opponent');
+        setMessage(`${opponentName.current}'s turn...`);
+      }
+    }
   }
-}
 
   async function opponentDraw() {
     if (!availDeck || !gameService) return;
@@ -439,7 +472,7 @@ async function handleDraw() {
       
       setTimeout(() => {
         if (gameState === 'main' && askedQuestion === 0) {
-          setMessage(`Select a card to ask ${opponentName}!`);
+          setMessage(`Select a card to ask ${opponentName.current}!`);
         }
       }, 1500);
     } else {
@@ -496,6 +529,7 @@ function handleAskAboutSelectedCard() {
       
       setTimeout(() => {
         setGoFishContext('player-ask'); // Triggers draw button
+        goFishContextRef.current = null;
       }, 700);
     }
   }, 1000);
@@ -506,7 +540,7 @@ async function opponentTakeTurn() {
   if (!opponentManager || !gameService) return;
 
   if (opponentHand.length=== 0 && availDeck) {
-    setMessage(`${opponentName} draws a card...`);
+    setMessage(`${opponentName.current} draws a card...`);
     await opponentDraw();
     setTimeout(()=> opponentAsk(), 1000);
     return;
@@ -535,94 +569,115 @@ async function opponentAsk() {
   
   const cardToAsk = move.cardAsked;
   setOpponentQuestion(cardToAsk);
-  setMessage(`${opponentName} is asking a question`);
+  setMessage(`${opponentName.current} is asking a question`);
   
   const dialogue = opponentManager.getDialogue('ask', cardToAsk);
   setOpponentWords(dialogue);
   setcatFace('Default');
   
   setAskedQuestion(1);
-  setTimeout(() => setGoFishContext('opponent-ask'), 1500);
+  setTimeout(() => {
+    setGoFishContext('opponent-ask');
+    goFishContextRef.current = 'opponent-ask';}, 1500);
 }
 
-function handleGiveCardToOpponent(cardValue) {
-  if (current_turn !== 'opponent' || !opponentQuestion || !gameService) return;
+  function handleGiveCardToOpponent(cardValue) {
+    if (current_turn !== 'opponent' || !opponentQuestion || !gameService) return;
 
-  if (cardValue === opponentQuestion) {
-    const count = playerHand.filter(card => card === cardValue).length;
-    const newHand = playerHand.filter(card => card !== cardValue);
-    setPlayerHand(newHand);
-    
-    if (gameMode === 'multiplayer' && socket && socket.readyState === 1) {
-      socket.send(JSON.stringify({
-        type: 'player-action',
-        action: 'give-card',
-        cardValue: cardValue,
-        count: count
-      }));
-    }
-    
-    if (gameMode === 'ai') {
-      const result = gameService.askForCard(opponentHand, playerHand, cardValue);
-      setOpponentHand(result.newAskingHand);
-    }
-    
-    setOpponentQuestion(null);
-    setMessage(`You gave ${count} ${cardValue}(s) to ${opponentName}`);
-    
-    if (opponentManager) {
-      setOpponentWords(opponentManager.getDialogue('got_card', cardValue));
-    }
-    setcatFace('Excited');
-    
-    setSelectedCards([]);
-    setAskedQuestion(0);
-
-    setTimeout(() => {
-      setCurrentTurn('player');
-      setcatFace('Default');
-      setOpponentWords('');
-      setMessage('Your turn!');
-    }, 1500);
-  }
-}
-
-function handleOpponentGoFish() {
-  setMessage(`Go fish! ${opponentName} will draw a card.`);
-  
-  // MULTIPLAYER: Tell opponent to go fish
-  if (gameMode === 'multiplayer' && socket && socket.readyState === 1) {
-    socket.send(JSON.stringify({
-      type: 'player-action',
-      action: 'go-fish-response',
-      cardAsked: opponentQuestion
-    }));
-  }
-  
-  // Frank
-  setOpponentWords(opponentManager.getDialogue('go_fish'));
-  setcatFace('Annoyed');
-  if(gameMode === 'ai') {
-    opponentDraw();
-  }
-  
-  setOpponentQuestion(null);
-  setGoFishContext(null);
-  setAskedQuestion(0);
-
-
-    setTimeout(() => {
-      if (gameMode === 'multiplayer') {
-        setMessage(`Waiting for ${opponentName} to draw...`);
-        // They'll send turn-change when ready
-      } else {
-        setCurrentTurn('player');
-        setcatFace('Default');
-        setMessage('Your turn!');
-        setOpponentWords('');
+    if (cardValue === opponentQuestion) {
+      const count = playerHand.filter(card => card === cardValue).length;
+      const newHand = playerHand.filter(card => card !== cardValue);
+      setPlayerHand(newHand);
+      
+      if (gameMode === 'multiplayer' && socket && socket.readyState === 1) {
+        socket.send(JSON.stringify({
+          type: 'player-action',
+          action: 'give-card',
+          cardValue: cardValue,
+          count: count
+        }));
       }
-    }, 1200);
-}
+      
+      if (gameMode === 'ai') {
+        const result = gameService.askForCard(opponentHand, playerHand, cardValue);
+        setOpponentHand(result.newAskingHand);
+      }
+      
+      setOpponentQuestion(null);
+      setGoFishContext(null);
+      goFishContextRef.current = null;
+
+      setMessage(`You gave ${count} ${cardValue}(s) to ${opponentName.current}`);
+      
+
+      setOpponentWords(opponentManager.getDialogue('got_card', cardValue));
+      setcatFace('Excited');
+      
+      setSelectedCards([]);
+      setAskedQuestion(0);
+
+      setTimeout(() => {
+        if (gameMode === 'ai') {
+          setCurrentTurn('player');
+          setMessage('Your turn!');
+        } else {
+          // In multiplayer, opponent still has the turn (they received cards)
+          setMessage(`${opponentName.current} can make pairs and will end their turn...`);
+        }
+        setcatFace('Default');
+        setOpponentWords('');
+      }, 1500);
+    }
+  }
+
+    function handleOpponentGoFish() {
+      if (!opponentQuestion) {
+        console.error('❌ No opponent question when clicking Go Fish!');
+        return;
+      }
+      
+      console.log('🎣 Telling opponent to go fish for card:', opponentQuestion);
+      
+      setMessage(`Go fish! ${opponentName.current} doesn't have that card.`);
+      
+      // MULTIPLAYER: Tell opponent to go fish
+      if (gameMode === 'multiplayer' && socket && socket.readyState === 1) {
+        socket.send(JSON.stringify({
+          type: 'player-action',
+          action: 'go-fish-response',
+          cardAsked: opponentQuestion
+        }));
+        
+        setOpponentQuestion(null);
+        setGoFishContext(null);
+        goFishContextRef.current = null;
+        setAskedQuestion(0);
+        
+        setTimeout(() => {
+          setMessage(`${opponentName.current} will draw and make pairs...`);
+          setcatFace('Default');
+          setOpponentWords('');
+        }, 1000);
+      } else {
+        // Bot mode: Frank draws
+        setOpponentWords(opponentManager.getDialogue('go_fish'));
+        setcatFace('Annoyed');
+        opponentDraw();
+        
+        setOpponentQuestion(null);
+        setGoFishContext(null);
+        goFishContextRef.current = null;
+        setAskedQuestion(0);
+
+        setTimeout(() => {
+          setCurrentTurn('player');
+          setcatFace('Default');
+          setMessage('Your turn!');
+          setOpponentWords('');
+        }, 1200);
+      }
+    }
+
 // ====== opponent pair checking =========
 
 function checkOpponentPairs() {
@@ -654,7 +709,7 @@ function checkOpponentPairs() {
       setOpponentWords(opponentManager.getDialogue('game_end_lose'));
       gameService.updatePlayerScore(1);
     } else if (winner === 'opponent') {
-      setMessage(`${opponentName} won! An amazing battle!`);
+      setMessage(`${opponentName.current} won! An amazing battle!`);
       setOpponentWords(opponentManager.getDialogue('game_end_win'));
       gameService.updatePlayerScore(0);
     } else {
@@ -701,40 +756,39 @@ function checkOpponentPairs() {
         setCurrentTurn(firstDrawer || 'player');
         return;
       }   
-
-
-    }, [gameState, firstDrawer, gameMode]);
+    }, [playerSetup, opponentSetup, gameState, firstDrawer, gameMode]);
 
     //setup for Frank
     useEffect(() => {
-      if(gameMode !== 'ai') return;
-      if(gameState !== 'setup') return;
-      if (hasStartedFrankSetup.current) return; // will return since Frank drew cards
-      if (!opponentSetup && opponentHand.length === 0 && current_turn === 'opponent') {
-        hasStartedFrankSetup.current = true;
-        setMessage(`${opponentName}'s drawing his cards...`);
-        setCurrentTurn('opponent');  
-        startOpponentSetupDraw(gameServiceRef.current, ()=> {
-        setOpponentSetup(true);
-        });
-      if (!playerSetup && playerHand.length === 0 && current_turn === 'player') {
-        handleDraw();
-      }
-      }
-    }, [gameState, gameMode, playerHand.length, opponentHand.length])
-
-    useEffect(()=> {
-      if(gameState !== 'setup') return;
-      if(playerSetup && opponentSetup) { // Frank and you done
+      if (gameMode !== 'ai' || gameState !== 'setup') return;
+      // Both ready? Start game!
+      if (playerSetup && opponentSetup) {
         setMessage("Both players have cards! Time to fish!");
         setGameState('main');
         setCurrentTurn(firstDrawer || 'player');
       }
-    }, [playerSetup, opponentSetup])
+    }, [playerSetup, opponentSetup, gameMode, gameState]);
+
+    useEffect(() => {
+      if(gameState !== 'setup') return;
+      if(!playerSetup && opponentSetup) {
+        setCurrentTurn('player');
+        setMessage('Your turn! Draw 3 cards!');
+      }
+      if(!opponentSetup && playerSetup) {
+        setCurrentTurn('opponent');
+        setMessage(`${opponentName.current}'s turn! They're drawing 3 cards!`);
+        if(gameMode === 'ai') {
+          startOpponentSetupDraw(gameServiceRef.current, () => {
+            setOpponentSetup(true);
+          });
+        }
+      }
+    }, [playerSetup, opponentSetup, current_turn])
   
     // Opponent's turn in main game
     useEffect(() => {
-      if(gameState === 'main' && current_turn === 'opponent' && askedQuestion === 0) {
+      if(gameState === 'main' && current_turn === 'opponent' && askedQuestion === 0 && gameMode === 'ai') {
         setTimeout(() => opponentTakeTurn(), 1000)
       }
     }, [current_turn, gameState, gameMode])
@@ -854,28 +908,28 @@ function checkOpponentPairs() {
             Ask About {selectedCards[0].value}
           </button>
         )}
-        {/* DRAW BUTTON */}
-        {(gameState === 'setup' || 
-          (playerHand.length === 0 && askedQuestion === 0 && availDeck && gameState === 'main')) && 
-          current_turn === 'player' && (
+        {/* DRAW BUTTON*/}
+        {current_turn === 'player' && availDeck && (
+          (gameState === 'setup' && playerHand.length < 3) || 
+          (gameState === 'main' && playerHand.length === 0)
+        ) && (
           <button 
             id="draw"
             onClick={handleDraw}
-            disabled={playerHand.length >= 3 && gameState === 'setup'}
           >
             <b>Draw</b>
           </button>
         )}
         
         {/* GO FISH PLAYER BUTTON */}
-        {gameState === 'main' && goFishContext === 'player-ask' && current_turn === 'player' && availDeck && (
-          <button 
-            id="go-fish"
-            onClick={handleDraw}
-          >
-            <b>Draw a Fish!</b>
-          </button>
-        )}
+      {gameState === 'main' && goFishContextRef.current === 'player-ask' && current_turn === 'player' && availDeck && (
+        <button 
+          id="go-fish"
+          onClick={handleDraw}
+        >
+          <b>Draw a Fish!</b>
+        </button>
+      )}
 
         {/* Cancel Ask Button */}
         {current_turn === 'player' && selectedCardForAsk !== null && askedQuestion === 0 && (
@@ -884,39 +938,49 @@ function checkOpponentPairs() {
             setMessage("Your turn");
             setOpponentWords('');
             setGoFishContext(null);
+            goFishContextRef.current = null;
           }}>
             Cancel Ask
           </button>
         )}
+            
+    {/* GO FISH TO OPPONENT BUTTON */}
+    {current_turn === 'opponent' && 
+    goFishContextRef.current === 'opponent-ask' && 
+    opponentQuestion !== null && 
+    !playerHand.includes(opponentQuestion) && (
+      <div className="response-buttons">           
+        <button 
+          id="go-fish-opponent" 
+          className="btn-warning"
+          onClick={handleOpponentGoFish}
+        >
+          Go Fish!
+        </button>
+      </div>
+    )}
         
-        {/* GO FISH TO OPPONENT BUTTON */}
-        {current_turn === 'opponent' && goFishContext === 'opponent-ask' && catFace !== 'Excited' &&  !playerHand.includes(opponentQuestion) && (
-          <div className="response-buttons">           
-            <button 
-              id="go-fish-opponent" 
-              className="btn-warning"
-              onClick={handleOpponentGoFish}
-            >
-              Go Fish!
-            </button>
-          </div>
-        )}
-        
-        {/* End Turn Button */}
-        {(current_turn === 'player' && gameState === 'main' && 
-          ((selectedCardForAsk === null && askedQuestion !== 0) || 
-           (playerHand.length === 0 && !availDeck))) && (
-          <button id="end-turn" onClick={() => {
+      {/* End Turn Button */}
+      {(current_turn === 'player' && gameState === 'main' && 
+        askedQuestion === 1 && // You asked a question
+        selectedCardForAsk === null && // Question resolved
+        goFishContextRef.current === null // No pending go fish action
+      ) && (
+        <button id="end-turn" onClick={() => {
+          if (gameMode === 'multiplayer') {
             requestTurnChange();
-            setAskedQuestion(0);
-            setMessage(`${opponentName}'s turn...`);
-            setSelectedCards([]);
-            setcatFace('Default');
-            setOpponentWords('. . .');
-          }}>
-            End Turn
-          </button>
-        )}
+          } else {
+            setCurrentTurn('opponent');
+          }
+          setAskedQuestion(0);
+          setMessage(`${opponentName.current}'s turn...`);
+          setSelectedCards([]);
+          setcatFace('Default');
+          setOpponentWords('. . .');
+        }}>
+          End Turn
+        </button>
+      )}
       </div>
 
       <div>
@@ -952,7 +1016,7 @@ function checkOpponentPairs() {
       
       {gameState === 'end' && (
         <div id='end-buttons'>
-          <p className = "narrator" style = {{ fontFamily: 'Trebuchet MS'}}> Game Over! Final Score: You {playerPairs} - {opponentName} {opponentPairs}</p>
+          <p className = "narrator" style = {{ fontFamily: 'Trebuchet MS'}}> Game Over! Final Score: You {playerPairs} - {opponentName.current} {opponentPairs}</p>
           <button
             type="button"
             className="scores"

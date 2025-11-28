@@ -25,6 +25,9 @@ export class OpponentManager {
 
     // ===== Multiplayer Logic (Raw WebSocket) =====
     waitForOpponentAction() {
+        if (!this.socket) {
+            return Promise.resolve({action: 'no_cards', cardAsked: null})
+        }
         return new Promise((resolve) => {
             const handler = (event) => {
                 const message = JSON.parse(event.data);
@@ -102,7 +105,7 @@ export class OpponentManager {
     // ===== Dialogue & Reactions =====
     getDialogue(situation, cardValue = null) {
         const dialogues = {
-            ask: [`Do you have any ${cardValue}s?`, `Got any ${cardValue}s?`, `Hand over your ${cardValue}s!`],
+            ask: [`Do you have any ${cardValue}s?`, `Got any ${cardValue}s?`, `Hand over your ${cardValue}s!`, `I'd like your ${cardValue}s please!`],
             got_card: ["Thanks for the card!", "That's a steal!", "Heh, nice."],
             no_card: [`Heh. I don't have any ${cardValue}s`, `Nope, no ${cardValue}s here!`, `Go fish!`],
             lost_card: ["I didn't want that card anyway...", `No! My ${cardValue}!`, "Aww man."],
