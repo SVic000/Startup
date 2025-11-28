@@ -405,12 +405,7 @@ async function opponentDrawWithService(service) {
       setGoFishContext(null);
       goFishContextRef.current = null;
       
-      if (gameModeRef.current === 'multiplayer') {
-        setMessage('Card drawn! Make pairs, then end your turn.');
-      } else {
-        setCurrentTurn('opponent');
-        setMessage(`${opponentName.current}'s turn...`);
-      }
+      setMessage('Card drawn! Make pairs, then end your turn.');
     }
   }
 
@@ -521,6 +516,7 @@ function handleAskAboutSelectedCard() {
       setTimeout(() => {
         setGoFishContext('player-ask');
         goFishContextRef.current = 'player-ask';
+        setcatFace('Default');
       }, 700);
     }
   }, 1000);
@@ -537,10 +533,10 @@ async function opponentTakeTurn() {
     return;
   }
 
-  if (opponentHand.length===0 && !availDeck) {
+  if (opponentHand.length===0 && !availDeck && playerHand.length > 0) {
     setCurrentTurn('player');
     setAskedQuestion(0);
-    setMessage('Your turn! Select a card to ask!');
+    setMessage(`Your turn! ${opponentName.current} can't draw from an empty deck!`);
     return;
   }
 
@@ -610,6 +606,7 @@ async function opponentAsk() {
         if (gameModeRef.current === 'ai') {
           setCurrentTurn('player');
           setMessage('Your turn! Select a card to ask!');
+          setAskedQuestion(0);
         } else {
           // In multiplayer, opponent still has the turn (they received cards)
           setMessage(`${opponentName.current} can make pairs and will end their turn...`);
@@ -830,12 +827,12 @@ function checkOpponentPairs() {
         <h1>Choose Your Opponent</h1>
         <div className="mode-buttons">
           <button className="mode-btn" onClick={handleSelectAI}>
-            <h2>🤖 Play vs Frank (AI)</h2>
+            <h2>Play vs Frank</h2>
             <p>Practice against the computer</p>
           </button>
           <button className="mode-btn" onClick={handleSelectMultiplayer}>
-            <h2>👥 Play vs Player</h2>
-            <p>Compete against another human</p>
+            <h2>Play vs Player</h2>
+            <p>Compete against another person</p>
           </button>
         </div>
       </main>

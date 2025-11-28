@@ -65,8 +65,9 @@ React.useEffect(() => {
 
     return (
       <main>
+        <div id = 'all-cat'>
         <div className="text-center">
-          select a cat
+          <h2>Select a Cat</h2>
           <p> This cat will be how you present to other players!</p>
         </div>
 
@@ -109,8 +110,9 @@ React.useEffect(() => {
           <b>Apply</b>
         </button>
         <button id="leave-cat" onClick={changeMenu}>
-          leave the cat menu!
+          Leave the Cat Menu!
         </button>
+        </div>
       </main>
     );
   }
@@ -118,14 +120,14 @@ React.useEffect(() => {
   return (
     <main className="container-fluid">
       <div className="Main-container d-flex justify-content-center flex-column align-items-center">
-        <div id="catfact" className="sticky-line text-center">
+        <div id="catfact" className="text-center">
           <h6> Fun Fact!</h6>
           <h6>
            {catFact}
           </h6>
         </div>
 
-        <div className="w-100 text-center sticky-line">
+        <div className="w-100 text-center">
           <p>Find an opponent!</p>
 
           <button
@@ -136,13 +138,12 @@ React.useEffect(() => {
             <b>Play</b>
           </button>
 
-          <br />
           <p> Select your cat!</p>
           <button id = "cat-menu" onClick={changeMenu}>
             Cat Menu
           </button>
 
-          <p>⤹ See how many times you've won! ⤵</p>
+          <p>See how many times you've won!</p>
 
           <button
           id='scores'

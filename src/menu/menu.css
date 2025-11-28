@@ -1,27 +1,44 @@
 
+.Main-container {
+  margin: 2%;
+}
+
 p {
   font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   font-weight: 500;
   font-size: large;
+  margin: 0% !important;
+  padding:0%;
 }
 
 #catfact {
   color: #e5963c;
+  margin: 3%;
+}
+
+#all-cat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 2%;
 }
 
 #apply {
   background-color: rgba(139, 194, 179, 0.809);
   border: none;
   font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-  font-size: large;
+  font-size: x-large;
   font-weight: 600;
   color: rgb(255, 255, 255);
   border-radius: 1cap;
   padding: 5px;
-  padding-left: 30px;
-  padding-right: 30px;
-  margin: 0px;
+  padding-right: 20px;
+  padding-left: 20px;
+  margin: 2%;
+  margin-bottom: 1%;
 }
+
 #apply:hover {
   border: solid;
   border-width: 2px;
@@ -53,7 +70,9 @@ p {
   padding: 10px;
   border-radius: 20px;
   font-family:Verdana, Geneva, Tahoma, sans-serif;
+  margin-top: 0px;
   margin: 1.5%;
+  margin-bottom: 20px;
 }
 
 #cat-menu:hover {
@@ -67,12 +86,13 @@ p {
   color: rgb(56, 87, 142);
   font-weight: 600;
   padding: 7px;
-  padding-left: 10px;
-  padding-right: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
   border-radius: 20px;
   font-family:Verdana, Geneva, Tahoma, sans-serif;
   margin: 2%;
 }
+
 #leave-cat:hover {
   background-color: rgba(211, 245, 249, 0.886);
   color: rgb(30, 77, 164);
@@ -85,7 +105,8 @@ p {
   padding: 2vw 5vw;
   border-radius: 50px;
   font-family:Verdana, Geneva, Tahoma, sans-serif;
-  margin: 1.5%;
+  margin: 4%;
+  margin-top: 3%;
 }
 
 #play:hover {
@@ -103,7 +124,7 @@ p {
   padding-right: 30px;
   padding-top: 10px;
   padding-bottom: 10px;
-  margin: 0px;
+  margin: 1%;
   font-size: 2.5dvw;
 }
 
@@ -135,6 +156,8 @@ p {
   display: flex;
   width: 50px;
   padding: 100px;
+  padding-top: 50px;
+  padding-bottom: 50px;
   flex-direction: column;
   align-items: center;
 }
