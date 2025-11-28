@@ -119,8 +119,10 @@ Right now, My website is still a little buggy, but I plan on locking in and figu
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **Backend listens for WebSocket connection** - I did not complete this part of the deliverable.
-- [ ] **Frontend makes WebSocket connection** - I did not complete this part of the deliverable.
-- [ ] **Data sent over WebSocket connection** - I did not complete this part of the deliverable.
-- [ ] **WebSocket data displayed** - I did not complete this part of the deliverable.
-- [ ] **Application is fully functional** - I did not complete this part of the deliverable.
+- [x] **Backend listens for WebSocket connection** - I did complete this part of the deliverable.
+- [x] **Frontend makes WebSocket connection** - I did complete this part of the deliverable.
+- [x] **Data sent over WebSocket connection** - I did complete this part of the deliverable.
+- [x] **WebSocket data displayed** - I did complete this part of the deliverable.
+- [x] **Application is fully functional** - I did complete this part of the deliverable.
+
+There might be a few bugs(Might? There for sure are...) , but for the most part I think it's a fully funcitoning Go fish game!
