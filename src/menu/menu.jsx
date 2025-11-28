@@ -57,7 +57,7 @@ React.useEffect(() => {
       return next;
     });
   }, 1000);
-  return () => clearInterval(interval); // cleanup when menu closes
+  return () => clearInterval(interval);
 
      },[catMenu])
 
@@ -83,7 +83,7 @@ React.useEffect(() => {
               src={`/${cat}${expression}.PNG`}
               alt={`${cat} ${expression} expression`}
             />
-            <button>{cat}</button>
+            <button className={`cat-name ${selectedCat === cat ? "selected" : ""}`}><b>{cat}</b></button>
           </div>
         ))}
       </div>
@@ -106,9 +106,9 @@ React.useEffect(() => {
             .catch(err => console.error(err));
           }}
         >
-          Apply
+          <b>Apply</b>
         </button>
-        <button onClick={changeMenu}>
+        <button id="leave-cat" onClick={changeMenu}>
           leave the cat menu!
         </button>
       </main>
@@ -138,9 +138,10 @@ React.useEffect(() => {
 
           <br />
           <p> Select your cat!</p>
-          <button onClick={changeMenu}>
-            cat menu
+          <button id = "cat-menu" onClick={changeMenu}>
+            Cat Menu
           </button>
+
           <p>⤹ See how many times you've won! ⤵</p>
 
           <button
