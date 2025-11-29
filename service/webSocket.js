@@ -51,9 +51,9 @@ function setupWebSocket(server, db) {
 
     // ===== HANDLE MESSAGES =====
     ws.on('message', async (data) => {
-      console.log('Backend received raw message:', data.toString());
+      //console.log('Backend received raw message:', data.toString());
       const message = JSON.parse(data);
-      console.log('Backend parsed message:', message);
+      // console.log('Backend parsed message:', message);
       const connInfo = connections.get(ws);
       
       switch (message.type) {
@@ -209,8 +209,6 @@ function setupWebSocket(server, db) {
   async function handleTurnChange(gameID, currentPlayerRole) {
     const game = await db.getGame(gameID);
     if (!game) return;
-
-    console.log('🔄 Current turn in DB BEFORE:', game.currentTurn);
     
     // Switch turns
     const newTurn = currentPlayerRole === 'player1' ? 'player2' : 'player1';
@@ -341,7 +339,7 @@ async function handleJoinQueue(ws, connInfo) {
     }, 1000);
     
   } else {
-    console.log('⏳ No waiting players, adding to queue');
+    console.log('No waiting players, adding to queue');
     const queueId = generateGameID();
     waitingPlayers.set(queueId, { ws, user: connInfo.user });
   }
