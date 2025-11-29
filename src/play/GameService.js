@@ -94,6 +94,28 @@ export class GameService {
     return { pairsFound, newHand, pairedCards };
   }
 
+// force player to make pairs so that they can't just end their turn and break the game!
+  havePair(hand) {
+    const cardCounts = {};
+    hand.forEach(card => {
+      cardCounts[card] = (cardCounts[card] || 0) + 1;
+    });
+
+    let pairsFound = 0;
+
+    Object.entries(cardCounts).forEach(([card, count]) => {
+      const cardNum = parseInt(card);
+      if (count >= 2) {
+        pairsFound++;
+      }
+    });
+    if(pairsFound > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   // -------------- ASKING & GIVING CARDS -------------
   
   askForCard(askingHand, receivingHand, cardValue) {

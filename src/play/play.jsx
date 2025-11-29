@@ -38,6 +38,7 @@ export function Play() {
   const opponentHandRef = useRef([]);
   const [opponentPairs, setOpponentPair] = useState(0);
   const [playerPairs, setPlayerPair] = useState(0);
+  const [canPair, setCanPair] = useState(false);
 
   // ====== UI States ========
   const [selectedCards, setSelectedCards] = useState([]); // which cards the player is selecting
@@ -381,6 +382,14 @@ async function handleDraw() {
   // Allow drawing even if deck appears empty (backend will return -1)
   const currentHand = playerHandRef.current;
   const { newHand, deckEmpty } = await service.draw(currentHand);
+
+  if(!newHand && !playerHandRef) { // didn't draw anything, and you don't have any card in your hand, so change players
+    if(gameModeRef.current === 'multiplayer') {
+      setMessage("Looks like the decks empty and you don't have cards!");
+      setOpponentWords(". . .");
+      requestTurnChange();
+    } // doesn't happen for Frank since he's always matching his pairs!
+  }
   
   if (newHand) {
     playerHandRef.current = newHand;
@@ -714,9 +723,11 @@ async function opponentAsk() {
   }
 }
 function classLabel(turn) {
-  if (turn === 'player' || winner === 'player' || !turn) {
+  if (turn === 'player' || winner === 'player') {
     return 'message_you';
-  } else {
+  } else if (!turn) {
+    return 'message_idol'
+  }else {
     return 'message_them';
   }
 }
@@ -808,6 +819,20 @@ function checkOpponentPairs() {
       }   
     }, [playerSetup, opponentSetup, gameState, firstDrawer, gameMode]);
 
+    //FORCE PLAYER TO PAIR
+    useEffect(() => {
+      if(!gameService || gameStateRef.current !== 'main') return;
+
+      const result = gameService.havePair(playerHandRef.current);
+      console.log(result);
+
+      if(result) {
+        setCanPair(true);
+      } else {
+        setCanPair(false);
+      }
+    }, [current_turn, playerHand.length])
+
     //setup for Frank
     useEffect(() => {
       if (gameModeRef.current !== 'ai' || gameStateRef.current !== 'setup') return;
@@ -860,6 +885,10 @@ function checkOpponentPairs() {
         }
       }
     }, [gameState, playerPairs, opponentPairs, availDeck, playerHand.length, opponentHand.length]);
+
+  useEffect(()=> {
+    console.log(canPair);
+  })
 
   // =========== RENDERs ========
   if (gameStateRef.current === 'mode_select') {
@@ -1021,7 +1050,7 @@ function checkOpponentPairs() {
         selectedCardForAsk === null && // Question resolved
         goFishContextRef.current === null // No pending go fish action (you drew or deck was empty)
       ) && (
-        <button id="end-turn" onClick={() => {
+        <button id="end-turn" disabled = {canPair} onClick={() => {
           if (gameModeRef.current === 'multiplayer') {
             requestTurnChange();
           } else {

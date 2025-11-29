@@ -15,6 +15,8 @@ main {
   margin: 0px;
 }
 
+
+
 #Restart {
   display: flex;
   color: rgb(96, 39, 146);
@@ -62,8 +64,12 @@ main {
   margin: 0px;
 }
 
+.message_idol {
+  color: rgb(232, 255, 229);
+}
+
 .message_you{
-  color: rgb(2, 157, 136) !important;
+  color: rgb(16, 149, 131) !important;
 }
 
 .message_them {
@@ -160,13 +166,33 @@ main {
 
 #end-turn {
   border: none;
+  margin: 7px;
+  margin-bottom: 4px;
+  padding: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  border-radius: 8px;
+  background-color: rgb(219, 216, 225);
+  color: rgb(108, 92, 138);
+  box-shadow: inset 0px 0px 2px 3px rgba(98, 97, 91, 0.259);
+  padding: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
+  border-radius: 15px;
+  font-size: 20px;
+  font-weight: 650;
+  box-shadow: 0px 0px 6px 4px rgba(242, 205, 194, 0.797);
+}
+
+#end-turn:disabled {
+  border: none;
   margin: 5px;
   padding: 10px;
   padding-left: 20px;
   padding-right: 20px;
   border-radius: 8px;
-  background-color: rgb(177, 172, 172);
-  color: rgb(49, 20, 20);
+  background-color: rgba(121, 121, 121, 0.447);
+  color: rgba(79, 79, 79, 0.705);
   box-shadow: inset 0px 0px 2px 3px rgba(98, 97, 91, 0.259);
   padding: 10px;
   padding-left: 15px;
