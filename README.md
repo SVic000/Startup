@@ -125,4 +125,4 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 - [x] **WebSocket data displayed** - I did complete this part of the deliverable.
 - [x] **Application is fully functional** - I did complete this part of the deliverable.
 
-There might be a few bugs(Might? There for sure are...) , but for the most part I think it's a fully funcitoning Go fish game!
+There might be a few bugs(Might? There for sure are...) , but for the most part I think it's a fully funcitoning Go fish game! Just some... edge cases, which is the beauty of code! If you find any... no you didn't.
