@@ -115,7 +115,17 @@ async function handleSelectMultiplayer() {
   gameStateRef.current = 'waiting';
   setMessage('Looking for an opponent...');
   
-  const wsUrl = 'ws://localhost:3000';
+  // Dynamic WebSocket URL
+  const isDevelopment = window.location.hostname === 'localhost';
+  let wsUrl;
+  
+  if (isDevelopment) {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    wsUrl = `${protocol}//${window.location.host}/ws`;
+  } else {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    wsUrl = `${protocol}//${window.location.host}`;
+  }
   
   const newSocket = new WebSocket(wsUrl);
   setSocket(newSocket);

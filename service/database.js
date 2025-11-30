@@ -55,7 +55,7 @@ async function addGame(game) {
 }
 
 async function getGame(gameID) {
-  return currentGamesCollection.findOne({ gameID: gameID }); // Fixed: use correct collection
+  return currentGamesCollection.findOne({ gameID: gameID });
 }
 
 async function deleteGame(gameID) {
@@ -65,7 +65,7 @@ async function deleteGame(gameID) {
 
 async function getDeck(gameID) {
   const game = await currentGamesCollection.findOne({ gameID: gameID });
-  return game ? game.deck : []; // Fixed: handle null case
+  return game ? game.deck : [];
 }
 
 async function updateDeck(gameID, newDeck) {
