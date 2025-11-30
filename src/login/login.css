@@ -9,15 +9,16 @@ header {
 }
 
 .LogI-Menu {
-  background-color: rgb(123, 167, 205) !important;
+  background-color:rgba(108, 174, 207, 0.734) !important;
+  color: rgb(245, 255, 255);
   border-color: rgb(67, 120, 167) !important;
   margin: .5 dvb;
 }
 .LogI-Menu:hover {
-  background-color: rgb(117, 152, 183)!important;
+  background-color: rgb(108, 139, 167)!important;
 }
 .Create-LogO {
-  color: rgb(110, 120, 130) !important;
+  color: rgb(56, 87, 142) !important;
   margin: .5dvb;
   background-color: rgb(223, 212, 201) !important;
   border-color: rgb(205, 178, 151) !important;
@@ -27,13 +28,13 @@ header {
 }
 
 h1 span {
-  color: rgb(123, 167, 205);
+  color: rgb(108, 174, 207);
 }
 h1 span b {
-  color: #e5963c;
+  color: #e5b23c;
 }
 span#name {
-  color: rgb(123, 167, 205);
+  color: rgb(119, 205, 247);
 }
 
 main {

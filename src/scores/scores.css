@@ -17,31 +17,41 @@ main {
 }
 .words {
   font-size: 5dvb;
+  margin: 0px !important;
+  padding: 0px !important;
 }
 #number{
-  color: #e5963c;
-  font-size: 9dvb;
-  background-color: rgba(240, 248, 255, 0.813); 
-  box-shadow: 0px 0px 2px rgba(240, 248, 255, 0.813) ;
-  padding: 5px;
-  padding-right: 25px;
-  padding-left: 25px;
-  border-radius: 100%;
+  color: #e5b23c;
+  font-weight: 700;
+  font-size: 300%;
 }
 
-#congrats {
-  color:#e5963c;
+#fish {
+  margin: 0px !important;
+  padding: 0px !important;
 }
+
 
 /* menu button */
 #menu {
-  background-color: rgba(233, 248, 255, 0.545);
-  margin: 0px;
-  padding: 10%;
-  font-size: large;
+  background-color: rgba(255, 239, 219, 0.67);
+  border: none;
+  color: rgb(56, 87, 142);
+  font-weight: 600;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-radius: 15px;
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  margin: 4%;
+  margin-top: 3%;
 }
+
 #menu:hover {
-  background-color: rgba(13, 109, 253, 0.839);
+  background-color: rgb(189, 231, 255);
+  border-color: rgba(104, 205, 255, 0.932);
+  color: rgb(44, 96, 185);
 }
 
 footer a {

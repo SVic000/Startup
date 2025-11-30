@@ -119,39 +119,27 @@ React.useEffect(() => {
 
   return (
     <main className="container-fluid">
-      <div className="Main-container d-flex justify-content-center flex-column align-items-center">
-        <div id="catfact" className="text-center">
-          <h6> Fun Fact!</h6>
-          <h6>
-           {catFact}
-          </h6>
-        </div>
-
-        <div className="w-100 text-center">
-          <p>Find an opponent!</p>
-
-          <button
-            id="play"
-            className='btn input-group-text'
-            onClick={() => navigate('/play')}
-          >
-            <b>Play</b>
-          </button>
-
+      <div className="Main-container">
+        <div className="text-center">
           <p> Select your cat!</p>
           <button id = "cat-menu" onClick={changeMenu}>
             Cat Menu
           </button>
+        </div>
 
-          <p>See how many times you've won!</p>
-
+        <div>
           <button
-          id='scores'
-            className="btn input-group-text"
-            onClick={() => navigate('/scores')}
+            id="play"
+            onClick={() => navigate('/play')}
           >
-            <b>𓆝  ⋆.</b>
+            <b>Play</b>
           </button>
+        </div>
+        <div id="catfact" className="text-center">
+          <h3> Fun Fact!</h3>
+        <h6 id = "catfactname">
+           {catFact}
+          </h6>
         </div>
       </div>
     </main>

@@ -19,9 +19,8 @@ export function Scores() {
     <main className="container-fluid">
       <br/>
       <div id="hold" className="d-flex justify-content-center flex-column align-items-center">
-        <p className='words'><b>YOU'VE CAUGHT</b></p>
-        <p className='words'>𓆞 <span id='number'><b>{score}</b></span> 𓆝</p>
-        <p className='words'><b>FISH!</b></p>
+        <p className='words'><b>YOU'VE CAUGHT FISH!</b></p>
+        <p id = "fish" className='words'>𓆞 <span id='number'><b>{score}</b></span> 𓆝</p>
         <p className='words' id="congrats"><b>Congratulations!</b></p>
       </div>
 
@@ -29,7 +28,6 @@ export function Scores() {
         <button
           type="button"
           id='menu'
-          className="btn btn-outline-primary input-group-text"
           onClick={() => navigate('/menu')}
         >
           <b>Return to Menu</b>

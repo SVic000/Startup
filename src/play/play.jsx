@@ -61,6 +61,22 @@ async function handleSelectAI() {
 
   hasStartedFrankSetup.current = false;
 
+  // Clean up any existing game for player
+  if (gameID) {
+    console.log('Cleaning up existing game before starting new AI game');
+    try {
+      await fetch('/api/play/delete', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ gameID: gameID })
+      });
+      setGameID(null);
+    } catch (error) {
+      console.error('Error cleaning up old game:', error);
+    }
+  }
+
   const service = new GameService(null, false);
   gameServiceRef.current = service;
   setGameService(service);
@@ -723,12 +739,13 @@ async function opponentAsk() {
   }
 }
 function classLabel(turn) {
-  if (turn === 'player' || winner === 'player') {
+  if (turn === 'player') {
     return 'message_you';
-  } else if (!turn) {
-    return 'message_idol'
+  } else if (turn === 'opponent') {
+    return 'message_them'
+
   }else {
-    return 'message_them';
+    return 'message_idol';
   }
 }
 
@@ -893,7 +910,8 @@ function checkOpponentPairs() {
   // =========== RENDERs ========
   if (gameStateRef.current === 'mode_select') {
     return (
-      <main className="mode-select-container">
+      <main>
+        <div className="mode-select-container">
         <h1>Choose Your Opponent</h1>
         <div className="mode-buttons">
           <button className="mode-btn" onClick={handleSelectAI}>
@@ -905,6 +923,7 @@ function checkOpponentPairs() {
             <p>Compete against another person</p>
           </button>
         </div>
+        </div>
       </main>
     );
   }
@@ -912,16 +931,17 @@ function checkOpponentPairs() {
   if (gameStateRef.current === 'waiting') {
     return (
       <main className="waiting-container">
+        <div className="mode-select-container">
         <h1>Finding an opponent...</h1>
-        <div className="spinner">🎣</div>
         <p>{message}</p>
-        <button onClick={() => {
+        <button className="cancel" onClick={() => {
           setGameState('mode_select');
           gameStateRef.current = 'mode_select';
           setMessage('Choose your opponent!');
         }}>
           Cancel
         </button>
+        </div>
       </main>
     );
   }

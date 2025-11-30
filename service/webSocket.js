@@ -256,15 +256,44 @@ function setupWebSocket(server, db) {
       connections.delete(ws);
     });
 
-    // ===== HELPER: JOIN QUEUE =====
 // ===== HELPER: JOIN QUEUE =====
 async function handleJoinQueue(ws, connInfo) {
-  console.log('handleJoinQueue called, user:', connInfo?.user?.email);
   
   if (!connInfo.user) {
-    console.log('❌ User not authenticated');
+    console.log('User not authenticated');
     ws.send(JSON.stringify({ type: 'error', msg: 'Not authenticated' }));
     return;
+  }
+  
+  // Check if user has an existing game and clean it up
+  if (connInfo.user.gameID) {
+    console.log('User has existing gameID:', connInfo.user.gameID);
+    
+    try {
+      const existingGame = await db.getGame(connInfo.user.gameID);
+      
+      if (existingGame) {
+        console.log('Cleaning up existing game before joining queue');
+        
+        // Notify opponent if they're still connected
+        sendToOpponent(connInfo.user.gameID, ws, { 
+          type: 'opponent-disconnected',
+          reason: 'rejoined-queue'
+        });
+        
+        // Cleanup the game
+        await cleanupGame(connInfo.user.gameID);
+      } else {
+        console.log('Game not found in DB, just clearing user reference');
+      }
+    } catch (err) {
+      console.error('Error checking/cleaning existing game:', err);
+    }
+    
+    // Clear the gameID from user and connection
+    connInfo.user.gameID = null;
+    await db.updateUser(connInfo.user);
+    connInfo.gameID = null;
   }
   
   console.log('Sending queue-joined message');

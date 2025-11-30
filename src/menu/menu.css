@@ -1,6 +1,10 @@
 
 .Main-container {
-  margin: 2%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2%;
+  margin-bottom: none;
 }
 
 p {
@@ -12,8 +16,11 @@ p {
 }
 
 #catfact {
-  color: #e5963c;
   margin: 3%;
+  width: 60%;
+}
+#catfactname {
+    color: #e5b23c;
 }
 
 #all-cat {
@@ -31,7 +38,7 @@ p {
   font-size: x-large;
   font-weight: 600;
   color: rgb(255, 255, 255);
-  border-radius: 1cap;
+  border-radius: 10px;
   padding: 5px;
   padding-right: 20px;
   padding-left: 20px;
@@ -48,10 +55,10 @@ p {
 
 .cat-name {
   background-color: rgba(108, 174, 207, 0.734);
+  color: rgb(245, 255, 255);
   font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   border: none;
-  color: rgb(245, 255, 255);
-  border-radius: 2cap;
+  border-radius: 10px;
   padding: 5px;
   padding-left: 30px;
   padding-right: 30px;
@@ -62,24 +69,23 @@ p {
 }
 
 #cat-menu {
-  background-color: rgba(216, 240, 253, 0.822);
-  color: rgb(30, 77, 164);
+  background-color: rgba(108, 174, 207, 0.734);
+  color: rgb(245, 255, 255);
   border: solid;
-  border-color: rgba(115, 188, 225, 0.932);
+  border-color: rgba(96, 174, 213, 0.75);
   font-weight: 600;
   padding: 10px;
-  border-radius: 20px;
+  border-radius: 12px;
   font-family:Verdana, Geneva, Tahoma, sans-serif;
-  margin-top: 0px;
-  margin: 1.5%;
-  margin-bottom: 20px;
+  margin: 4%;
+  margin-bottom: 30%;
 }
 
 #cat-menu:hover {
-  background-color: rgb(189, 231, 255);
-  border-color: rgba(104, 205, 255, 0.932);
-  color: rgb(44, 96, 185);
+  background-color: rgb(131, 171, 196);
+  border-color: rgba(69, 122, 149, 0.932);
 }
+
 #leave-cat {
   background-color: rgba(255, 239, 219, 0.739);
   border: none;
@@ -88,7 +94,7 @@ p {
   padding: 7px;
   padding-left: 20px;
   padding-right: 20px;
-  border-radius: 20px;
+  border-radius: 10px;
   font-family:Verdana, Geneva, Tahoma, sans-serif;
   margin: 2%;
 }
@@ -97,7 +103,10 @@ p {
   background-color: rgba(211, 245, 249, 0.886);
   color: rgb(30, 77, 164);
 }
+
 #play {
+  display: flex;
+  border: none;
   background-color: rgba(255, 239, 219, 0.67);
   color: rgb(56, 87, 142);
   font-weight: 600;
@@ -106,7 +115,8 @@ p {
   border-radius: 50px;
   font-family:Verdana, Geneva, Tahoma, sans-serif;
   margin: 4%;
-  margin-top: 3%;
+  margin-top: 1%;
+  margin-bottom: none;
 }
 
 #play:hover {
@@ -119,7 +129,7 @@ p {
   border:none;
   color:rgb(4, 24, 24);
   border-radius: 20%;
-  background-color: rgba(127, 173, 174, 0.631);
+  background-color: rgba(122, 192, 193, 0.674);
   padding-left: 30px;
   padding-right: 30px;
   padding-top: 10px;

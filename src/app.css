@@ -12,12 +12,12 @@
 
 main {
   background-color: #5c6c84;
-  color: #a7c2ce;
+  color: #e0f4ff;
 }
 
 .navbar-brand {
   display: flex;
-  color: rgb(101, 142, 177);
+  color: rgb(147, 181, 211);
   border-bottom: solid#9db7c4 thin;
   padding: 1%;
 }

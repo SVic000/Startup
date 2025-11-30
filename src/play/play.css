@@ -8,6 +8,59 @@ main {
   box-sizing: border-box;
 }
 
+.mode-buttons {
+  display: flex;
+  flex-direction: row;
+}
+.mode-btn {
+  background-color: rgba(139, 194, 179, 0.809);
+  border: solid;
+  border-color: rgba(139, 194, 179, 0);
+  border-width: 2px;
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-size: x-large;
+  font-weight: 600;
+  color: rgb(255, 255, 255);
+  border-radius: 10px;
+  padding: 15px;
+  padding-right: 35px;
+  padding-left: 35px;
+  margin: 3%;
+  margin-left: 30px;
+  margin-right: 30px;
+}
+
+.mode-btn:hover {
+  border-color: rgba(243, 243, 243, 0.293);
+  background-color: rgba(77, 156, 135, 0.809);
+}
+
+.mode-select-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cancel {
+  display: flex;
+  border: none;
+  background-color: rgba(255, 239, 219, 0.67);
+  color: rgb(56, 87, 142);
+  font-weight: 600;
+  padding: 10px;
+  padding-right: 20px;
+  padding-left: 20px;
+  border-radius: 15px;
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  margin-top: 70px;
+}
+
+.cancel:hover {
+  background-color: rgb(189, 231, 255);
+  border-color: rgba(104, 205, 255, 0.932);
+  color: rgb(44, 96, 185);
+}
+
 #end-buttons {
   display: flex;
   flex-direction: column;
@@ -65,15 +118,19 @@ main {
 }
 
 .message_idol {
-  color: rgb(232, 255, 229);
+  color: rgba(108, 247, 210, 0.809);
+}
+
+.fish {
+  margin: 3%;
 }
 
 .message_you{
-  color: rgb(16, 149, 131) !important;
+  color: rgb(53, 184, 224) !important;
 }
 
 .message_them {
-  color: rgb(123, 14, 43) !important;
+  color: #e5b23c;
 }
 
 .narrator {
@@ -172,16 +229,14 @@ main {
   padding-left: 20px;
   padding-right: 20px;
   border-radius: 8px;
-  background-color: rgb(219, 216, 225);
-  color: rgb(108, 92, 138);
-  box-shadow: inset 0px 0px 2px 3px rgba(98, 97, 91, 0.259);
+  background-color: rgb(213, 203, 232);
+  color: rgb(67, 65, 131);
   padding: 10px;
   padding-left: 15px;
   padding-right: 15px;
   border-radius: 15px;
   font-size: 20px;
   font-weight: 650;
-  box-shadow: 0px 0px 6px 4px rgba(242, 205, 194, 0.797);
 }
 
 #end-turn:disabled {
@@ -230,7 +285,7 @@ main {
 }
 
 .dots {
-  color: #e5963c;
+  color: #e5b23c;
   font-size:xx-large;
   padding: 0px;
   margin: 0px;
