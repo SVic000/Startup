@@ -84,15 +84,19 @@ main {
 
 .scores {
   display: flex;
-  color: rgb(20, 41, 28);
-  background-color:rgba(51, 156, 172, 0.496);
-  border: solid;
-  border-color:  rgba(20, 41, 28, 0.249);
+  background-color: rgba(108, 174, 207, 0.734);
+  border: none;
+  color: rgb(245, 255, 255);
   margin: 10px;
   border-radius: 14px;
   padding: 10px;
   padding-left: 20px;
   padding-right: 20px;
+}
+
+.scores:hover {
+  background-color: rgb(131, 171, 196);
+  border-color: rgba(69, 122, 149, 0.932);
 }
 
 .top-menu {
@@ -104,7 +108,13 @@ main {
 }
 
 #menu-button {
-  background-color: rgba(245, 222, 179, 0.628);
+  background-color: rgba(255, 239, 219, 0.739);
+  border: none;
+  color: rgb(34, 67, 125);
+}
+#menu-button:hover {
+  background-color: rgba(211, 245, 249, 0.886);
+  color: rgb(30, 77, 164);
 }
 
 #turn {
@@ -138,7 +148,7 @@ main {
 }
 
 #frankswords {
-  color: #dbc39b;
+  color: #ffd573;
   border-radius: 12px;
   font-size: 17px;
   justify-content: center;

@@ -61,7 +61,7 @@ async function handleSelectAI() {
 
   hasStartedFrankSetup.current = false;
 
-  // Clean up any existing game for player
+  // Clean up any existing game for
   if (gameID) {
     console.log('Cleaning up existing game before starting new AI game');
     try {

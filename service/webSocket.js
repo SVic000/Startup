@@ -257,10 +257,12 @@ function setupWebSocket(server, db) {
     });
 
 // ===== HELPER: JOIN QUEUE =====
+// ===== HELPER: JOIN QUEUE =====
 async function handleJoinQueue(ws, connInfo) {
+  console.log('handleJoinQueue called, user:', connInfo?.user?.email);
   
   if (!connInfo.user) {
-    console.log('User not authenticated');
+    console.log('❌ User not authenticated');
     ws.send(JSON.stringify({ type: 'error', msg: 'Not authenticated' }));
     return;
   }
@@ -300,8 +302,18 @@ async function handleJoinQueue(ws, connInfo) {
   ws.send(JSON.stringify({ type: 'queue-joined' }));
   
   if (waitingPlayers.size > 0) {
-    console.log('Match found! Pairing players...');
+    console.log('Match found! Checking for valid opponent...');
     const [waitingId, waitingData] = waitingPlayers.entries().next().value;
+    
+    // Prevent matching with yourself
+    if (waitingData.user.email === connInfo.user.email) {
+      console.log('Same user tried to match with themselves, staying in queue');
+      const queueId = generateGameID();
+      waitingPlayers.set(queueId, { ws, user: connInfo.user });
+      return;
+    }
+    
+    console.log('Valid opponent found! Pairing players...');
     waitingPlayers.delete(waitingId);
     
     const gameID = generateGameID();
@@ -373,6 +385,7 @@ async function handleJoinQueue(ws, connInfo) {
     waitingPlayers.set(queueId, { ws, user: connInfo.user });
   }
 }
+
     // ===== HELPER: CLEANUP GAME =====
     async function cleanupGame(gameID) {
       if (!gameID) return;
