@@ -63,7 +63,7 @@ function App() {
         <div className="container-fluid">
           <span className="text-reset">Author Name</span>
           <a className="text-reset" href="https://github.com/SVic000/Startup/">
-            Github!
+            Victoria Silva
           </a>
         </div>
       </footer>
