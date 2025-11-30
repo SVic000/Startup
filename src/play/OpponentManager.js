@@ -1,20 +1,20 @@
 export class OpponentManager {
-    constructor(type = 'ai', gameService, socket = null) {
+    constructor(type = 'bot', gameService, socket = null) {
         this.type = type;
         this.gameService = gameService;
         this.socket = socket; // Raw WebSocket connection
         this.messageHandlers = new Map();
     }
 
-    // ===== AI Logic =======
-    aiChooseCardToAsk(opponentHand) {
+    // ===== Bot Logic =======
+    botChooseCardToAsk(opponentHand) {
         if (opponentHand.length === 0) return null;
         const randomIndex = Math.floor(Math.random() * opponentHand.length);
         return opponentHand[randomIndex];
     }
 
-    async aiTakeTurn(opponentHand, playerHand) {
-        const cardToAsk = this.aiChooseCardToAsk(opponentHand);
+    async botTakeTurn(opponentHand, playerHand) {
+        const cardToAsk = this.botChooseCardToAsk(opponentHand);
 
         if (!cardToAsk) {
             return { action: 'no_cards', cardAsked: null };
@@ -53,8 +53,8 @@ export class OpponentManager {
 
     // ===== Unified Interface =====
     async getOpponentMove(opponentHand, playerHand) {
-        if (this.type === 'ai') {
-            return await this.aiTakeTurn(opponentHand, playerHand);
+        if (this.type === 'bot') {
+            return await this.botTakeTurn(opponentHand, playerHand);
         } else {
             return await this.waitForOpponentAction();
         }
@@ -105,15 +105,15 @@ export class OpponentManager {
     // ===== Dialogue & Reactions =====
     getDialogue(situation, cardValue = null) {
         const dialogues = {
-            ask: [`Do you have any ${cardValue}s?`, `Got any ${cardValue}s?`, `Hand over your ${cardValue}s!`, `I'd like your ${cardValue}s please!`],
-            got_card: ["Thanks for the card!", "That's a steal!", "Heh, nice."],
-            no_card: [`Heh. I don't have any ${cardValue}s`, `Nope, no ${cardValue}s here!`, `Go fish!`],
-            lost_card: ["I didn't want that card anyway...", `No! My ${cardValue}!`, "Aww man."],
-            go_fish: ["Rats. I need that card.", "Darn it!", "Unfortunate for me."],
-            made_pair: ["Yes! A pair!", "I feel richer!", "Fish caught!"],
-            game_end_win: ["Heh, you were a tough foe. Good game!", "I win! Thanks for the game!", "Victory is mine!"],
-            game_end_lose: ["Oof, you were a strong opponent! Good game!", "You got me! Well played!", "Nice win!"],
-            game_end_tie: ["A tie! We're equally matched! Good game!", "What a close match!", "Impressive! We played well!"],
+            ask: [`Do you have any ${cardValue}s?`, `Got any ${cardValue}s?`, `Hand over your ${cardValue}s!`, `I'd like your ${cardValue}s please!`, `Give me your ${cardValue}s!`],
+            got_card: ["Thanks for the card!", "That's a steal!", "Heh, nice.", "Boy o boy I love points", "Finally!", "For free? You shouldn't have!"],
+            no_card: [`Heh. I don't have any ${cardValue}s`, `Nope, no ${cardValue}s here!`, `Go fish!`, "A hit and a miss."],
+            lost_card: ["I didn't want that card anyway...", `No! My ${cardValue}!`, "Aww man.", "AAAAAAAAAAAAAAAAA", `You sure you want that ${cardValue}?`],
+            go_fish: ["Rats. I need that card.", "Darn it!", "Unfortunate for me.", "That made me sad.", "Tragic.", "Count your lucky stars."],
+            made_pair: ["Yes! A pair!", "I feel richer!", "Fish caught!", "Matched!", "Good thing I can count!", "I love it when life works out."],
+            game_end_win: ["Heh, you were a tough foe. Good game!", "I win! Thanks for the game!", "Victory is mine!", "Another defeated foe!", "More fish for me!"],
+            game_end_lose: ["Oof, you were a strong opponent! Good game!", "You got me! Well played!", "Nice win!", "No! I put a bet on my house! Good game."],
+            game_end_tie: ["A tie! We're equally matched! Good game!", "What a close match!", "Impressive! We played well!", "It's like looking in a mirror! Good game!"],
         };
         const options = dialogues[situation] || ['. . .'];
         return options[Math.floor(Math.random() * options.length)];

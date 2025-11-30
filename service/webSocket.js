@@ -262,7 +262,7 @@ async function handleJoinQueue(ws, connInfo) {
   console.log('handleJoinQueue called, user:', connInfo?.user?.email);
   
   if (!connInfo.user) {
-    console.log('❌ User not authenticated');
+    console.log('User not authenticated');
     ws.send(JSON.stringify({ type: 'error', msg: 'Not authenticated' }));
     return;
   }
